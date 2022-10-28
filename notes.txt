@@ -1,0 +1,19 @@
+This is just a file to track some project notes for myself, feel free to disregard.
+
+Conversation Goal:
+
+Easy:
+    Given -> Input Text
+>>    Judge Sentiment
+      hold sentiment and respond accordinly...
+      maybe write a few premade responses and figure out how to generate "similar" sentences
+
+Harder:
+Return -> Message
+>>    1. Train to respond in plain english
+        ::GAN Generative Adversarial Network - first option... kinda hard
+        ::maybe look into existing solutions i.e. chatbots. then focus on translation
+>>    2. Seperately train to translate a plain english sentence into Shakespeare
+        ::Will probably need to look into GAN for this... maybe something else??
+        :: hopefully something else
+    3. Return translated message...
