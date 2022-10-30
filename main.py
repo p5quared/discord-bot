@@ -1,5 +1,7 @@
-import discord
 import os
+
+import discord
+from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 #  from nltk.sentiment import SentimentIntensityAnalyzer
@@ -11,21 +13,22 @@ _token = os.environ['DISCORD_TOKEN']
 # _publicKEY = os.environ['PUBLIC_KEY']
 # wait a minute... did I ever use any of these???
 
-intents = discord.Intents.default()
-intents.message_content = True
+_intents = discord.Intents.default()
+_intents.message_content = True
 
-client = discord.Client(intents=intents)
+bot = Bot(command_prefix='%', intents=_intents)
 
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'Bot is logged in as {client.user}')
+    print(f'Bot is logged in as {bot.user}')
 
 
-@client.event
+@bot.event
 async def on_message(message):
+    await bot.process_commands(message)
     print(f'MESSAGE RECEIVED:\nUSER:{message.author}\nBODY: {message.content}\n')
-    if message.author == client.user:
+    if message.author == bot.user:
         print("Skipping message reply: identical user\n")
         return
 
@@ -44,4 +47,9 @@ async def on_message(message):
         print("I've been waiting for you, Nathan!!!!")
 
 
-client.run(token=_token)
+@bot.command(name='test')
+async def test(ctx):
+    await ctx.send("command recognized")
+
+
+bot.run(token=_token)
