@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52854cc7-fd07-4b9d-a84b-272970bacd7b" name="Changes" comment="basic chat purge command implemented minus a help feature">
+      <change beforePath="$PROJECT_DIR$/.idea/bmcc-bot-python.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/bmcc-bot-python.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -27,12 +29,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/peterv/PycharmProjects/bmcc-bot-python",
+    "last_opened_file_path": "/Users/peterv/PycharmProjects/discord-bot",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
@@ -91,6 +93,7 @@
       <workItem from="1666846487655" duration="118000" />
       <workItem from="1666846609522" duration="491000" />
       <workItem from="1667169233441" duration="10274000" />
+      <workItem from="1667189777596" duration="146000" />
     </task>
     <task id="LOCAL-00001" summary="intial setup">
       <created>1666565433465</created>
