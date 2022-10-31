@@ -17,7 +17,7 @@ _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
 
-bot = Bot(command_prefix='%', intents=_intents)
+bot = Bot(command_prefix='$', intents=_intents)
 
 
 @bot.event
@@ -57,21 +57,35 @@ async def test(ctx):
 async def clear(ctx, q):
     if q == 'all':
         _embed = discord.Embed(
-            title=f'Purging {ctx.channel} in 30 seconds...\n'
-                  f'React to the 🛑 to cancel.'
+            title=f'Purging {ctx.channel} in 10 seconds...\n'
+                  f'Confirm with ☠️ or react 🛑 to cancel.'
         )
-        await ctx.send(embed=_embed)
-        nuke_gif = await ctx.send("https://imgur.com/r/gifs/rlfYxNj")
-        await nuke_gif.add_reaction('🛑')
-        await asyncio.sleep(30)
+        msg = await ctx.send(embed=_embed)
+        await msg.add_reaction('☠️')
+        await msg.add_reaction('🛑')
 
-        if nuke_gif.reactions.count('🛑') < 1:
-            await ctx.channel.purge()
-        else:
+        def confirm(reaction, user):
+            return user == ctx.message.author and (str(reaction.emoji) == '☠️' or str(reaction.emoji) == '🛑')
+
+        try:
+            reaction, user = await bot.wait_for('reaction_add', timeout=10.0, check=confirm)
+        except asyncio.TimeoutError:
+            await ctx.channel.purge(limit=3)
+            await ctx.send("https://media.giphy.com/media/6q29hxDKvJvPy/giphy.gif")
             await ctx.send("Purge aborted...")
+        else:
+            if reaction.emoji == '☠️':
+                await ctx.channel.purge()
+                await ctx.send("https://imgur.com/r/gifs/rlfYxNj")
+                await ctx.send(f'{ctx.channel} has been purged...')
+            else:
+                await ctx.channel.purge(limit=3)
+                await ctx.send("https://media.giphy.com/media/6q29hxDKvJvPy/giphy.gif")
+                await ctx.send("Purge aborted...")
 
     else:
         await ctx.channel.purge(limit=(int(q) + 1))
-        await ctx.channel.send(f'{int(q)+1} messages cleared from {ctx.channel}.')
+        await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
+
 
 bot.run(token=_token)
