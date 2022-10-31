@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 import discord
 from discord.ext.commands import Bot
@@ -47,9 +48,30 @@ async def on_message(message):
         print("I've been waiting for you, Nathan!!!!")
 
 
-@bot.command(name='test')
+@bot.command()
 async def test(ctx):
     await ctx.send("command recognized")
 
+
+@bot.command()
+async def clear(ctx, q):
+    if q == 'all':
+        _embed = discord.Embed(
+            title=f'Purging {ctx.channel} in 30 seconds...\n'
+                  f'React to the 🛑 to cancel.'
+        )
+        await ctx.send(embed=_embed)
+        nuke_gif = await ctx.send("https://imgur.com/r/gifs/rlfYxNj")
+        await nuke_gif.add_reaction('🛑')
+        await asyncio.sleep(30)
+
+        if nuke_gif.reactions.count('🛑') < 1:
+            await ctx.channel.purge()
+        else:
+            await ctx.send("Purge aborted...")
+
+    else:
+        await ctx.channel.purge(limit=(int(q) + 1))
+        await ctx.channel.send(f'{int(q)+1} messages cleared from {ctx.channel}.')
 
 bot.run(token=_token)
