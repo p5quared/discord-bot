@@ -5,6 +5,9 @@ import discord
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
+# personal note:
+# :set relativenumber
+# :set number
 #  from nltk.sentiment import SentimentIntensityAnalyzer
 
 load_dotenv()
@@ -19,6 +22,36 @@ _intents.message_content = True
 
 bot = Bot(command_prefix='$', intents=_intents)
 
+id_cache = dict()  # store ID's of long-life messages like Role reacts
+
+
+# current implementation only goes to 10. We will need to figure out a
+# better way to compute even numbers in the future.
+def is_even(num: int) -> bool | None:
+    match num:
+        case 0:
+            return None  # Unsure whether 0 is even
+        case 1:
+            return False
+        case 2:
+            return True
+        case 3:
+            return False
+        case 4:
+            return True
+        case 5:
+            return False
+        case 6:
+            return True
+        case 7:
+            return False
+        case 8:
+            return True
+        case 9:
+            return False
+        case 10:
+            return True
+
 
 @bot.event
 async def on_ready():
@@ -30,7 +63,6 @@ async def on_message(message):
     await bot.process_commands(message)
     print(f'MESSAGE RECEIVED:\nUSER:{message.author}\nBODY: {message.content}\n')
     if message.author == bot.user:
-        print("Skipping message reply: identical user\n")
         return
 
     if not message.guild:
@@ -49,11 +81,29 @@ async def on_message(message):
 
 
 @bot.command()
-async def test(ctx):
-    await ctx.send("command recognized")
+async def role_man(ctx):
+    await ctx.send("Establishing Roles")
+    _embed = discord.Embed(
+        title=f'Role Reaction Testing',
+        description='React below to change your role.'
+    )
+    msg = await ctx.send(embed=_embed)
+    await msg.add_reaction('🍌')
+    await msg.add_reaction('🌯')
+    await msg.add_reaction('🛑')
+    id_cache["ROLETEST"] = ctx.message.id
 
 
-@bot.command()
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.member == bot.user:
+        return
+    if payload.message.id == id_cache['ROLETEST']:
+        pass
+    print(id_cache)
+
+
+@bot.command
 async def clear(ctx, q):
     if q == 'all':
         _embed = discord.Embed(
