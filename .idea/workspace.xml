@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="52854cc7-fd07-4b9d-a84b-272970bacd7b" name="Changes" comment="basic chat purge command implemented minus a help feature">
+    <list default="true" id="52854cc7-fd07-4b9d-a84b-272970bacd7b" name="Changes" comment="testing role_manager">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -98,7 +98,8 @@
       <workItem from="1667238650094" duration="4000" />
       <workItem from="1667238665125" duration="20000" />
       <workItem from="1667238690670" duration="133000" />
-      <workItem from="1667313819040" duration="4034000" />
+      <workItem from="1667313819040" duration="4088000" />
+      <workItem from="1667323524565" duration="3734000" />
     </task>
     <task id="LOCAL-00001" summary="intial setup">
       <created>1666565433465</created>
@@ -128,7 +129,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667178323416</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="testing role_manager">
+      <created>1667321355086</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1667321355086</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -150,10 +158,11 @@
     <MESSAGE value="Changed  client &gt;&gt; bot to enable commands" />
     <MESSAGE value="mostly done with bot clear command to test embeds &amp; reactions" />
     <MESSAGE value="basic chat purge command implemented minus a help feature" />
-    <option name="LAST_COMMIT_MESSAGE" value="basic chat purge command implemented minus a help feature" />
+    <MESSAGE value="testing role_manager" />
+    <option name="LAST_COMMIT_MESSAGE" value="testing role_manager" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/discord_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1667315887730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/discord_bot$main.coverage" NAME="main Coverage Results" MODIFIED="1667326335726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/bmcc_bot_python$main.coverage" NAME="main Coverage Results" MODIFIED="1666728154335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/bmcc_bot_python$main2.coverage" NAME="main Coverage Results" MODIFIED="1667178228785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

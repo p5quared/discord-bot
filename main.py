@@ -81,7 +81,7 @@ async def on_message(message):
 
 
 @bot.command()
-async def role_man(ctx):
+async def rm(ctx):
     await ctx.send("Establishing Roles")
     _embed = discord.Embed(
         title=f'Role Reaction Testing',
@@ -91,23 +91,47 @@ async def role_man(ctx):
     await msg.add_reaction('🍌')
     await msg.add_reaction('🌯')
     await msg.add_reaction('🛑')
-    id_cache["ROLETEST"] = ctx.message.id
+    id_cache['ROLETEST'] = msg.id
 
 
 @bot.event
 async def on_raw_reaction_add(payload):
     if payload.member == bot.user:
         return
-    if payload.message.id == id_cache['ROLETEST']:
-        pass
-    print(id_cache)
+    if payload.message_id == id_cache['ROLETEST']:  # enter role making flow
+        member = payload.member
+        guild = member.guild
+        emoji = payload.emoji.name
+        role = None
+        if emoji == '🍌':
+            role = discord.utils.get(guild.roles, name="Banana")
+        elif emoji == '🌯':
+            role = discord.utils.get(guild.roles, name="Burrito")
+        if role is not None:
+            await member.add_roles(role)
 
+@bot.event
+async def on_raw_reaction_remove(payload):
+    if payload.member == bot.user:
+        return
+    print("Reaction removal detected")
+    if payload.message_id == id_cache['ROLETEST']:  # enter role making flow
+        guild = await(bot.fetch_guild(payload.guild_id))
+        emoji = payload.emoji.name
+        role = None
+        if emoji == '🍌':
+            role = discord.utils.get(guild.roles, name="Banana")
+        elif emoji == '🌯':
+            role = discord.utils.get(guild.roles, name="Burrito")
+        if role is not None:
+            member = await(guild.fetch_member(payload.user_id))
+            await member.remove_roles(role)
 
-@bot.command
+@bot.command()
 async def clear(ctx, q):
     if q == 'all':
         _embed = discord.Embed(
-            title=f'Purging {ctx.channel} in 10 seconds...\n'
+            title=f'Purging {ctx.channel}...\n'
                   f'Confirm with ☠️ or react 🛑 to cancel.'
         )
         msg = await ctx.send(embed=_embed)
