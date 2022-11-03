@@ -17,3 +17,18 @@ Return -> Message
         ::Will probably need to look into GAN for this... maybe something else??
         :: hopefully something else
     3. Return translated message...
+
+
+sample stuff from python
+sample_roles = dict()
+sample_roles["test1"] = {"embed": {
+    "title": f'Role Reaction Testing',
+    "description": 'Adding a react will add the role.\nRemoving your react will remove the role.'
+}, "reacts": {'🍌': "banana", '🌯': "burrito"}}
+sample_roles["test2"] = {"embed": {
+    "title": f'Another reaction role!!!',
+    "description": 'Adding a react will add the role.\nRemoving your react will remove the role.'
+}, "reacts": {'🤠': "cowboy", '🩺': "doctor"}}
+# need to convert each "embed" to discord.Embed with arguments
+with open("roles.json", "w") as f:
+    json.dump(sample_roles, f)

@@ -1,11 +1,11 @@
 import os
 import asyncio
+import json
 
 import discord
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
-
-from TicTacComputer import TicTacComputer as tc
+from send_message import send_message
 
 # personal note:
 # :set relativenumber
@@ -24,7 +24,16 @@ _intents.message_content = True
 
 bot = Bot(command_prefix='$', intents=_intents)
 
-id_cache = dict()  # store ID's of long-life messages like Role reacts
+id_cache = dict()
+
+with open("roles.json", "r") as f:
+    roles_cache = json.load(f)
+for role in roles_cache:
+    print(role)
+    _title = roles_cache[role]['embed']['title']
+    _descr = roles_cache[role]["embed"]["description"]
+    roles_cache[role]["embed"] = discord.Embed(title=_title,
+                                               description=_descr)
 
 
 @bot.event
@@ -55,17 +64,19 @@ async def on_message(message):
 
 
 @bot.command()
-async def rm(ctx):
-    await ctx.send("Establishing Roles")
-    _embed = discord.Embed(
-        title=f'Role Reaction Testing',
-        description='Adding a react will add the role.\nRemoving your react will remove the role.'
-    )
-    msg = await ctx.send(embed=_embed)
-    await msg.add_reaction('🍌')
-    await msg.add_reaction('🌯')
-    await msg.add_reaction('🛑')
-    id_cache['ROLETEST'] = msg.id
+async def rm(ctx, arg=None):
+    if not arg:
+        await ctx.send("Please enter the name of the role-reactor.")
+    else:
+        msg = await ctx.send(embed=roles_cache[arg]["embed"])
+        for r in roles_cache[arg]["reacts"].keys():
+            await msg.add_reaction(r)
+
+
+@bot.command()
+async def send(ctx):
+    await send_message(ctx)
+
 
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -139,5 +150,6 @@ async def clear(ctx, q):
 @bot.command()
 async def tictactoe(ctx):
     pass
+
 
 bot.run(token=_token)
