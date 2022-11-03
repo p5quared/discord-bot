@@ -5,6 +5,8 @@ import discord
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
+from TicTacComputer import TicTacComputer as tc
+
 # personal note:
 # :set relativenumber
 # :set number
@@ -23,34 +25,6 @@ _intents.message_content = True
 bot = Bot(command_prefix='$', intents=_intents)
 
 id_cache = dict()  # store ID's of long-life messages like Role reacts
-
-
-# current implementation only goes to 10. We will need to figure out a
-# better way to compute even numbers in the future.
-def is_even(num: int) -> bool | None:
-    match num:
-        case 0:
-            return None  # Unsure whether 0 is even
-        case 1:
-            return False
-        case 2:
-            return True
-        case 3:
-            return False
-        case 4:
-            return True
-        case 5:
-            return False
-        case 6:
-            return True
-        case 7:
-            return False
-        case 8:
-            return True
-        case 9:
-            return False
-        case 10:
-            return True
 
 
 @bot.event
@@ -85,14 +59,13 @@ async def rm(ctx):
     await ctx.send("Establishing Roles")
     _embed = discord.Embed(
         title=f'Role Reaction Testing',
-        description='React below to change your role.'
+        description='Adding a react will add the role.\nRemoving your react will remove the role.'
     )
     msg = await ctx.send(embed=_embed)
     await msg.add_reaction('🍌')
     await msg.add_reaction('🌯')
     await msg.add_reaction('🛑')
     id_cache['ROLETEST'] = msg.id
-
 
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -110,11 +83,11 @@ async def on_raw_reaction_add(payload):
         if role is not None:
             await member.add_roles(role)
 
+
 @bot.event
 async def on_raw_reaction_remove(payload):
     if payload.member == bot.user:
         return
-    print("Reaction removal detected")
     if payload.message_id == id_cache['ROLETEST']:  # enter role making flow
         guild = await(bot.fetch_guild(payload.guild_id))
         emoji = payload.emoji.name
@@ -126,6 +99,7 @@ async def on_raw_reaction_remove(payload):
         if role is not None:
             member = await(guild.fetch_member(payload.user_id))
             await member.remove_roles(role)
+
 
 @bot.command()
 async def clear(ctx, q):
@@ -144,7 +118,7 @@ async def clear(ctx, q):
         try:
             reaction, user = await bot.wait_for('reaction_add', timeout=10.0, check=confirm)
         except asyncio.TimeoutError:
-            await ctx.channel.purge(limit=3)
+            await ctx.channel.purge(limit=2)
             await ctx.send("https://media.giphy.com/media/6q29hxDKvJvPy/giphy.gif")
             await ctx.send("Purge aborted...")
         else:
@@ -161,5 +135,9 @@ async def clear(ctx, q):
         await ctx.channel.purge(limit=(int(q) + 1))
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
+
+@bot.command()
+async def tictactoe(ctx):
+    pass
 
 bot.run(token=_token)
