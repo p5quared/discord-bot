@@ -1,4 +1,4 @@
 .env
 .idea
 venv
-workspace.xml
+**/.idea/workspace.xml
