@@ -66,7 +66,7 @@ async def on_message(message):
 @bot.command()
 async def rm(ctx, arg=None):
     if not arg:
-        await ctx.send("Please enter the name of the role-reactor.")
+        await ctx.send("Please enter the title of the role-reaction file.")
     else:
         msg = await ctx.send(embed=roles_cache[arg]["embed"])
         for r in roles_cache[arg]["reacts"].keys():
