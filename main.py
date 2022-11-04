@@ -5,7 +5,7 @@ import json
 import discord
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
-from send_message import send_message
+from bot_functions.send_message import send_message
 
 # personal note:
 # :set relativenumber
@@ -127,13 +127,13 @@ async def clear(ctx, q):
             return user == ctx.message.author and (str(reaction.emoji) == '☠️' or str(reaction.emoji) == '🛑')
 
         try:
-            reaction, user = await bot.wait_for('reaction_add', timeout=10.0, check=confirm)
+            _reaction, _user = await bot.wait_for('reaction_add', timeout=10.0, check=confirm)
         except asyncio.TimeoutError:
             await ctx.channel.purge(limit=2)
             await ctx.send("https://media.giphy.com/media/6q29hxDKvJvPy/giphy.gif")
             await ctx.send("Purge aborted...")
         else:
-            if reaction.emoji == '☠️':
+            if _reaction.emoji == '☠️':
                 await ctx.channel.purge()
                 await ctx.send("https://imgur.com/r/gifs/rlfYxNj")
                 await ctx.send(f'{ctx.channel} has been purged...')
