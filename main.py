@@ -29,7 +29,6 @@ id_cache = dict()
 with open("roles.json", "r") as f:
     roles_cache = json.load(f)
 for role in roles_cache:
-    print(role)
     _title = roles_cache[role]['embed']['title']
     _descr = roles_cache[role]["embed"]["description"]
     roles_cache[role]["embed"] = discord.Embed(title=_title,
@@ -44,7 +43,6 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    print(f'MESSAGE RECEIVED:\nUSER:{message.author}\nBODY: {message.content}\n')
     if message.author == bot.user:
         return
 
@@ -65,16 +63,33 @@ async def on_message(message):
 
 @bot.command()
 async def rm(ctx, arg=None):
+    """
+    This function posts react-role managers.
+    They must be preconfigured and are extracted from "roles.json" on bot startup.
+    After the message is sent, the ID of the message is automatically cached and
+    associated with the desired role from roles.json.
+    Note: Calling this function twice for the same role with overwrite the previously cached ID.
+    :param ctx: automatically passed context argument via discordpy.
+    :param arg: represents desired keyword for a pre-made role in cache.
+    :return: N/a
+    """
     if not arg:
         await ctx.send("Please enter the title of the role-reaction file.")
     else:
         msg = await ctx.send(embed=roles_cache[arg]["embed"])
         for r in roles_cache[arg]["reacts"].keys():
             await msg.add_reaction(r)
+        roles_cache[arg]["ID"] = msg.id
+        print(roles_cache[arg]["ID"])
 
 
 @bot.command()
 async def send(ctx):
+    """
+    This function should send messages to desired channels.
+    :param ctx:
+    :return: N/a
+    """
     await send_message(ctx)
 
 
@@ -82,6 +97,9 @@ async def send(ctx):
 async def on_raw_reaction_add(payload):
     if payload.member == bot.user:
         return
+    for role in roles_cache:
+        if roles_cache[role]["ID"] == payload.message_id:
+            print(role)
     if payload.message_id == id_cache['ROLETEST']:  # enter role making flow
         member = payload.member
         guild = member.guild

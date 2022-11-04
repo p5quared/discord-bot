@@ -2,3 +2,4 @@
 .idea
 venv
 **/.idea/workspace.xml
+.DS_Store
