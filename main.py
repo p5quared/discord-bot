@@ -7,24 +7,11 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from bot_functions.send_message import send_message
 
-# personal note:
-# :set relativenumber
-# :set number
-#  from nltk.sentiment import SentimentIntensityAnalyzer
-
 load_dotenv()
-# _appID = os.environ['APP_ID']
-# _guildID = os.environ['GUILD_ID']  # hmm... did I ever use this?
 _token = os.environ['DISCORD_TOKEN']
-# _publicKEY = os.environ['PUBLIC_KEY']
-# wait a minute... did I ever use any of these???
-
 _intents = discord.Intents.default()
 _intents.message_content = True
-
 bot = Bot(command_prefix='$', intents=_intents)
-
-id_cache = dict()
 
 
 def read_cache():
@@ -114,17 +101,6 @@ async def on_raw_reaction_add(payload):
                 if emoji_added == emoji:
                     role_desired = discord.utils.get(guild.roles, name=roles_cache[role]['reacts'][emoji])
                     await member.add_roles(role_desired)
-    # if payload.message_id == id_cache['ROLETEST']:
-    #     member = payload.member
-    #     guild = member.guild
-    #     emoji = payload.emoji.name
-    #     role = None
-    #     if emoji == '🍌':
-    #         role = discord.utils.get(guild.roles, name="Banana")
-    #     elif emoji == '🌯':
-    #         role = discord.utils.get(guild.roles, name="Burrito")
-    #     if role is not None:
-    #         await member.add_roles(role)
 
 
 @bot.event
@@ -141,17 +117,6 @@ async def on_raw_reaction_remove(payload):
                     role_desired = discord.utils.get(guild.roles, name=roles_cache[role]['reacts'][emoji])
                     member = await(guild.fetch_member(payload.user_id))
                     await member.remove_roles(role_desired)
-    # if payload.message_id == id_cache['ROLETEST']:
-    #     guild = await(bot.fetch_guild(payload.guild_id))
-    #     emoji = payload.emoji.name
-    #     role = None
-    #     if emoji == '🍌':
-    #         role = discord.utils.get(guild.roles, name="Banana")
-    #     elif emoji == '🌯':
-    #         role = discord.utils.get(guild.roles, name="Burrito")
-    #     if role is not None:
-    #         member = await(guild.fetch_member(payload.user_id))
-    #         await member.remove_roles(role)
 
 
 @bot.command()
@@ -197,11 +162,6 @@ async def clear(ctx, q):
     else:
         await ctx.channel.purge(limit=(int(q) + 1))
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
-
-
-@bot.command()
-async def tictactoe(ctx):
-    pass
 
 
 bot.run(token=_token)
