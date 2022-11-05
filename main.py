@@ -26,13 +26,29 @@ bot = Bot(command_prefix='$', intents=_intents)
 
 id_cache = dict()
 
-with open("roles.json", "r") as f:
-    roles_cache = json.load(f)
-for role in roles_cache:
-    _title = roles_cache[role]['embed']['title']
-    _descr = roles_cache[role]["embed"]["description"]
-    roles_cache[role]["embed"] = discord.Embed(title=_title,
-                                               description=_descr)
+
+def read_cache():
+    with open("roles.json", "r") as f:
+        roles_cache = json.load(f)
+    print(f'roles_cache at open: {roles_cache}')
+    for role in roles_cache:
+        _title = roles_cache[role]['embed']['title']
+        _descr = roles_cache[role]["embed"]["description"]
+        roles_cache[role]["embed"] = discord.Embed(title=_title,
+                                                   description=_descr)
+    print(f'roles_cache after convert: {roles_cache}')
+    return roles_cache
+
+
+def write_cache(live_cache: dict):
+    for role in live_cache.values():
+        _title = role['embed'].title
+        _descr = role['embed'].description
+        role['embed'] = {'title': _title,
+                         'description': _descr}
+    print(f'live_cache: {live_cache}')
+    with open("roles.json", "w") as f:
+        json.dump(live_cache, f, indent=2)
 
 
 @bot.event
@@ -76,22 +92,22 @@ async def rm(ctx, arg=None):
     if not arg:
         await ctx.send("Please enter the title of the role-reaction file.")
     else:
+        roles_cache = read_cache()
         msg = await ctx.send(embed=roles_cache[arg]["embed"])
         for r in roles_cache[arg]["reacts"].keys():
             await msg.add_reaction(r)
         roles_cache[arg]["ID"] = msg.id
-        print(roles_cache[arg]["ID"])
-
-
+        write_cache(roles_cache)
 
 
 @bot.event
 async def on_raw_reaction_add(payload):
     if payload.member == bot.user:
         return
+    roles_cache = read_cache()
     for role in roles_cache:
         if roles_cache[role]["ID"] == payload.message_id:  # enter role making flow
-            member =payload.member
+            member = payload.member
             guild = member.guild
             emoji_added = payload.emoji.name
             for emoji in roles_cache[role]['reacts']:
@@ -115,6 +131,7 @@ async def on_raw_reaction_add(payload):
 async def on_raw_reaction_remove(payload):
     if payload.member == bot.user:
         return
+    roles_cache = read_cache()
     for role in roles_cache:
         if roles_cache[role]["ID"] == payload.message_id:  # enter role making flow
             guild = await(bot.fetch_guild(payload.guild_id))
@@ -136,6 +153,7 @@ async def on_raw_reaction_remove(payload):
     #         member = await(guild.fetch_member(payload.user_id))
     #         await member.remove_roles(role)
 
+
 @bot.command()
 async def send(ctx):
     """
@@ -144,6 +162,7 @@ async def send(ctx):
     :return: N/a
     """
     await send_message(ctx)
+
 
 @bot.command()
 async def clear(ctx, q):
