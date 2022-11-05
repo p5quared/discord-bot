@@ -83,6 +83,59 @@ async def rm(ctx, arg=None):
         print(roles_cache[arg]["ID"])
 
 
+
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.member == bot.user:
+        return
+    for role in roles_cache:
+        if roles_cache[role]["ID"] == payload.message_id:  # enter role making flow
+            member =payload.member
+            guild = member.guild
+            emoji_added = payload.emoji.name
+            for emoji in roles_cache[role]['reacts']:
+                if emoji_added == emoji:
+                    role_desired = discord.utils.get(guild.roles, name=roles_cache[role]['reacts'][emoji])
+                    await member.add_roles(role_desired)
+    # if payload.message_id == id_cache['ROLETEST']:
+    #     member = payload.member
+    #     guild = member.guild
+    #     emoji = payload.emoji.name
+    #     role = None
+    #     if emoji == '🍌':
+    #         role = discord.utils.get(guild.roles, name="Banana")
+    #     elif emoji == '🌯':
+    #         role = discord.utils.get(guild.roles, name="Burrito")
+    #     if role is not None:
+    #         await member.add_roles(role)
+
+
+@bot.event
+async def on_raw_reaction_remove(payload):
+    if payload.member == bot.user:
+        return
+    for role in roles_cache:
+        if roles_cache[role]["ID"] == payload.message_id:  # enter role making flow
+            guild = await(bot.fetch_guild(payload.guild_id))
+            emoji_added = payload.emoji.name
+            for emoji in roles_cache[role]['reacts']:
+                if emoji_added == emoji:
+                    role_desired = discord.utils.get(guild.roles, name=roles_cache[role]['reacts'][emoji])
+                    member = await(guild.fetch_member(payload.user_id))
+                    await member.remove_roles(role_desired)
+    # if payload.message_id == id_cache['ROLETEST']:
+    #     guild = await(bot.fetch_guild(payload.guild_id))
+    #     emoji = payload.emoji.name
+    #     role = None
+    #     if emoji == '🍌':
+    #         role = discord.utils.get(guild.roles, name="Banana")
+    #     elif emoji == '🌯':
+    #         role = discord.utils.get(guild.roles, name="Burrito")
+    #     if role is not None:
+    #         member = await(guild.fetch_member(payload.user_id))
+    #         await member.remove_roles(role)
+
 @bot.command()
 async def send(ctx):
     """
@@ -91,44 +144,6 @@ async def send(ctx):
     :return: N/a
     """
     await send_message(ctx)
-
-
-@bot.event
-async def on_raw_reaction_add(payload):
-    if payload.member == bot.user:
-        return
-    for role in roles_cache:
-        if roles_cache[role]["ID"] == payload.message_id:
-            print(role)
-    if payload.message_id == id_cache['ROLETEST']:  # enter role making flow
-        member = payload.member
-        guild = member.guild
-        emoji = payload.emoji.name
-        role = None
-        if emoji == '🍌':
-            role = discord.utils.get(guild.roles, name="Banana")
-        elif emoji == '🌯':
-            role = discord.utils.get(guild.roles, name="Burrito")
-        if role is not None:
-            await member.add_roles(role)
-
-
-@bot.event
-async def on_raw_reaction_remove(payload):
-    if payload.member == bot.user:
-        return
-    if payload.message_id == id_cache['ROLETEST']:  # enter role making flow
-        guild = await(bot.fetch_guild(payload.guild_id))
-        emoji = payload.emoji.name
-        role = None
-        if emoji == '🍌':
-            role = discord.utils.get(guild.roles, name="Banana")
-        elif emoji == '🌯':
-            role = discord.utils.get(guild.roles, name="Burrito")
-        if role is not None:
-            member = await(guild.fetch_member(payload.user_id))
-            await member.remove_roles(role)
-
 
 @bot.command()
 async def clear(ctx, q):
