@@ -1,24 +1,25 @@
 {
-  "test1": {
+  "sa": {
     "embed": {
-      "title": "Role Reaction Testing",
-      "description": "Adding a react will add the role.\nRemoving your react will remove the role."
+      "title": "Please select/react to the BMCC status that suits you.",
+      "description": ":notebook: - Student\n:mortar_board: - Alumni\nNote: Picking a role indicates that you have read, and agreed to our rules, and thus, grants you access to the channels of this server. Happy coding!"
     },
     "reacts": {
-      "\ud83c\udf4c": "banana",
-      "\ud83c\udf2f": "burrito"
+      "\ud83d\udcd3": "Student",
+      "\ud83c\udf93": "Alumni"
     },
-    "ID": 1038544878205947944
+    "ID": 1038567076513714197
   },
-  "test2": {
+  "gender": {
     "embed": {
-      "title": "Another reaction role!!!",
-      "description": "Adding a react will add the role.\nRemoving your react will remove the role."
+      "title": "Select/react to the gender identity which best suits you",
+      "description": "This makes it easier for us to make certain channels accessible to you, like AcmW which is a group for Women & non-binaries.\nWe will work to ensure this club is a safe space for all members.\n:blue_circle: He/Him\n:purple_circle: She/Her\n:green_circle: They/Them"
     },
     "reacts": {
-      "\ud83e\udd20": "cowboy",
-      "\ud83e\ude7a": "doctor"
+      "\ud83d\udd35": "He/Him",
+      "\ud83d\udfe3": "She/Her",
+      "\ud83d\udfe2": "They/Them/Other"
     },
-    "ID": 1038544888360353864
+    "ID": 1038566984805265558
   }
 }
