@@ -11,7 +11,6 @@ from bot_functions.send_message import send_message
 # :set relativenumber
 # :set number
 #  from nltk.sentiment import SentimentIntensityAnalyzer
-#adsfasdfadsf
 
 load_dotenv()
 # _appID = os.environ['APP_ID']
