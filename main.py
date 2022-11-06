@@ -3,15 +3,18 @@ import asyncio
 import json
 
 import discord
+from discord.ext import commands
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
-from bot_functions.send_message import send_message
 
 load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
 bot = Bot(command_prefix='$', intents=_intents)
+
+with open("help.json", "r") as f:
+    help_file = json.load(f)
 
 
 def read_cache():
@@ -120,16 +123,40 @@ async def on_raw_reaction_remove(payload):
 
 
 @bot.command()
-async def send(ctx):
+async def send(ctx, kwarg):
     """
     This function should send messages to desired channels.
-    :param ctx:
+    :param ctx: automatically passed context argument via discordpy.
+    :param kwarg: name of channel
     :return: N/a
     """
-    await send_message(ctx)
+    target_channel = None
+    for guild in bot.guilds:
+        for channel in guild.text_channels:
+            if channel.name == kwarg:
+                target_channel = channel
+    if target_channel is None:
+        _embed = discord.Embed(
+            title=f'Error with command($) "send"',
+            description=f'Channel {kwarg} was not found in list of channels.\n'
+                        f'Please try again and double check the spelling of your channel.\n'
+                        f'I am cleaning channel names of emojis, but make sure to match space characters\
+                        like "-" and "_".\n'
+        )
+        await ctx.send(embed=_embed)
+        return
+
+    await ctx.send("Channel found, type the message you'd like to send.")
+
+    def check(m):
+        return m.channel == ctx.channel and m.author != bot.user
+
+    msg = await bot.wait_for("message", check=check)
+    await target_channel.send(msg.content)
 
 
 @bot.command()
+@commands.has_permissions(administrator=True)
 async def clear(ctx, q):
     if q == 'all':
         _embed = discord.Embed(
@@ -162,6 +189,17 @@ async def clear(ctx, q):
     else:
         await ctx.channel.purge(limit=(int(q) + 1))
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
+
+@bot.command()
+async def helps(ctx):
+    await ctx.send("Here is a list of the currently implemented commands:")
+    o_str = ''
+    print(help_file)
+    for cmd in help_file.values():
+        o_str += f'Name: {cmd["name"]}\n'
+        o_str += f'Usage: {cmd["usage"]}\n'
+        o_str += f'Description: {cmd["description"]}\n\n'
+    await ctx.send(o_str)
 
 
 bot.run(token=_token)

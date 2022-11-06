@@ -1,0 +1,22 @@
+{
+  "help": {
+    "name": "Help",
+    "usage": "$help",
+    "description": "Posts this message."
+  },
+  "rm": {
+    "name": "Role Manage",
+    "usage": "$rm <role-name>",
+    "description": "Posts pre-configured react-role message in the current channel."
+  },
+  "send": {
+    "name": "Send Message",
+    "usage": "$send <channel-name>\n...\n<message>",
+    "description": "Sends a message to the desired text-channel."
+  },
+  "clear": {
+    "name": "Clear Channel",
+    "usage": "$clear <arg['all', integer value]>",
+    "description": "Clears a text channel."
+  }
+}
