@@ -20,13 +20,11 @@ with open("help.json", "r") as f:
 def read_cache():
     with open("roles.json", "r") as f:
         roles_cache = json.load(f)
-    print(f'roles_cache at open: {roles_cache}')
     for role in roles_cache:
         _title = roles_cache[role]['embed']['title']
         _descr = roles_cache[role]["embed"]["description"]
         roles_cache[role]["embed"] = discord.Embed(title=_title,
                                                    description=_descr)
-    print(f'roles_cache after convert: {roles_cache}')
     return roles_cache
 
 
@@ -80,7 +78,7 @@ async def rm(ctx, arg=None):
     :return: N/a
     """
     if not arg:
-        await ctx.send("Please enter the title of the role-reaction file.")
+        await ctx.send("Incorrect usage... Please pass the title of role from roles.json as argument.")
     else:
         roles_cache = read_cache()
         msg = await ctx.send(embed=roles_cache[arg]["embed"])
@@ -200,6 +198,15 @@ async def helps(ctx):
         o_str += f'Usage: {cmd["usage"]}\n'
         o_str += f'Description: {cmd["description"]}\n\n'
     await ctx.send(o_str)
+
+@bot.command()
+async def release(ctx):
+    with open("release_notes.md", "r") as f:
+        notes = f.read()
+    # notes = "```" + notes + "```"
+    _embed = discord.Embed(title="Latest Release Notes:",
+                           description=notes)
+    await ctx.send(embed=_embed)
 
 
 bot.run(token=_token)
