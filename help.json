@@ -18,5 +18,10 @@
     "name": "Clear Channel",
     "usage": "$clear <arg['all', integer value]>",
     "description": "Clears a text channel."
+  },
+  "release": {
+    "name": "Release Notes",
+    "usage": "$release",
+    "description": "Prints the notes for the latest release."
   }
 }
