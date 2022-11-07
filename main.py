@@ -77,6 +77,7 @@ async def rm(ctx, arg=None):
     :param arg: represents desired keyword for a pre-made role in cache.
     :return: N/a
     """
+    await ctx.channel.purge(limit=1)
     if not arg:
         await ctx.send("Incorrect usage... Please pass the title of role from roles.json as argument.")
     else:
@@ -101,6 +102,8 @@ async def on_raw_reaction_add(payload):
             for emoji in roles_cache[role]['reacts']:
                 if emoji_added == emoji:
                     role_desired = discord.utils.get(guild.roles, name=roles_cache[role]['reacts'][emoji])
+                    print(roles_cache[role]['reacts'][emoji])
+                    print(role_desired)
                     await member.add_roles(role_desired)
 
 
@@ -128,10 +131,11 @@ async def send(ctx, kwarg):
     :param kwarg: name of channel
     :return: N/a
     """
+    await ctx.channel.purge(limit=1)
     target_channel = None
     for guild in bot.guilds:
         for channel in guild.text_channels:
-            if channel.name == kwarg:
+            if kwarg in channel.name:
                 target_channel = channel
     if target_channel is None:
         _embed = discord.Embed(
@@ -190,6 +194,7 @@ async def clear(ctx, q):
 
 @bot.command()
 async def helps(ctx):
+    await ctx.channel.purge(limit=1)
     await ctx.send("Here is a list of the currently implemented commands:")
     o_str = ''
     print(help_file)
@@ -201,6 +206,7 @@ async def helps(ctx):
 
 @bot.command()
 async def release(ctx):
+    await ctx.channel.purge(limit=1)
     with open("release_notes.md", "r") as f:
         notes = f.read()
     # notes = "```" + notes + "```"

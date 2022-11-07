@@ -44,4 +44,4 @@ If you would like to join this project to gain experience working with bots, ser
 There is an unending list of things that could be implemented and improved which have difficulties ranging from very easy (only a few lines of code or no code)
 to challenging (100+ lines and lots of Googling).
 
-[Github Repo](https://github.com/p5quared/discord-bot/tree/bmcc-release)
+[Github Repo](https://github.com/p5quared/discord-bot/)

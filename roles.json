@@ -1,14 +1,14 @@
 {
- "sa": {
+  "sa": {
     "embed": {
       "title": "Please select/react to the BMCC status that suits you.",
       "description": ":notebook: - Student\n:mortar_board: - Alumni\nNote: Picking a role indicates that you have read, and agreed to our rules, and thus, grants you access to the channels of this server. Happy coding!"
     },
     "reacts": {
-      "\ud83d\udcd3": "Student",
+      "\ud83d\udcd3": "Member",
       "\ud83c\udf93": "Alumni"
     },
-    "ID": 1038567076513714197
+    "ID": 1039044979898732594
   },
   "gender": {
     "embed": {
@@ -18,9 +18,9 @@
     "reacts": {
       "\ud83d\udd35": "He/Him",
       "\ud83d\udfe3": "She/Her",
-      "\ud83d\udfe2": "They/Them/Other"
+      "\ud83d\udfe2": "They/Them"
     },
-    "ID": 1038566984805265558
+    "ID": 1039044990879416342
   },
   "test1": {
     "embed": {
