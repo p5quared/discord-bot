@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
+#testing
 load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
