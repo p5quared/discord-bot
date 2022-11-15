@@ -1,3 +1,4 @@
+import datetime
 import os
 import asyncio
 import json
@@ -11,10 +12,18 @@ load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='$', intents=_intents)
+bot = Bot(command_prefix='%', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
+
+error = discord.Embed(title="Unknown Error Encountered",
+                      color=15548997,
+                      timestamp=datetime.datetime.now(),
+                      description="There seems to have been an error with the bot.\n"
+                                  "Try your command again, and if the problem persists reach out in the Collaboration"
+                                  "channel, describing your intended use and exact commands entered."
+                      )
 
 
 def read_cache():
@@ -26,6 +35,12 @@ def read_cache():
         roles_cache[role]["embed"] = discord.Embed(title=_title,
                                                    description=_descr)
     return roles_cache
+
+
+def read_config():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    return config
 
 
 def write_cache(live_cache: dict):
@@ -159,6 +174,74 @@ async def send(ctx, kwarg):
 
 
 @bot.command()
+async def feedback(ctx):
+    """
+    This function sends feedback to a target channel, specified in config.json.
+    Confirms whether desire is to be anonymous or not through reaction flow.
+
+    :param ctx:
+    :return: N/a
+    """
+    await ctx.channel.purge(limit=1)
+    _embed = discord.Embed(
+        title="Confirm Feedback Request",
+        description=f'You are about to submit user feedback.\n'
+                    f'React with the following for your feedback to be anonymous or public:\n'
+                    f'🤐: Anonymous\n'
+                    f'🎤: Public'
+    )
+    msg = await ctx.send(embed=_embed)
+    for r in ['🤐', '🎤']:
+        await msg.add_reaction(r)
+
+    def check_react(reaction, user):
+        return user == ctx.author and str(reaction.emoji) in ['🤐', '🎤']
+
+    try:
+        reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check_react)
+    except asyncio.TimeoutError:
+        await ctx.channel.send('Error: request timeout.')
+    else:
+        config = read_config()
+        await ctx.channel.purge(limit=1)
+        if str(reaction.emoji) == '🤐':
+            _embed = discord.Embed(title="Submit Feedback",
+                                   description="You have 90 seconds to enter your feedback. Your message will be "
+                                               "erased and instantly transmitted to a private feedback channel. "
+                                               "\nNote: Your entire feedback must be in ONE message (sent at once). If "
+                                               "you have a large amount of feedback it is suggested you copy and paste "
+                                               "to send it."
+                                               "\nThe entire process is 100% anonymous. There are no records kept "
+                                               "by the bot nor anyone in control of the bot.")
+            await ctx.channel.send(embed=_embed)
+
+            def check(m):
+                return m.author == ctx.author and m.channel == ctx.channel
+
+            try:
+                msg = await bot.wait_for('message', timeout=90.0, check=check)
+            except asyncio.TimeoutError:
+                await ctx.channel.send('Error: request timeout.')
+                await bot.wait_for('reaction_add', timeout=5.0)
+            else:
+                channel = bot.get_channel(config["feedback"]["anonymous"])
+                await channel.send(embed=discord.Embed(title="Feedback Received",
+                                                       timestamp=datetime.datetime.now(),
+                                                       description=msg.content))
+            await ctx.channel.purge(limit=2)
+        elif str(reaction.emoji) == '🎤':
+            await ctx.channel.send("You can send public feedback to the dedicated suggestions-feedback channel.\n:)")
+            try:
+                await bot.wait_for('reaction_add', timeout=5.0)
+            except asyncio.TimeoutError:
+                await ctx.channel.purge(limit=2)
+            else:
+                await ctx.channel.send(embed=error)
+        else:
+            await ctx.channel.send(embed=error)
+
+
+@bot.command()
 @commands.has_permissions(administrator=True)
 async def clear(ctx, q):
     if q == 'all':
@@ -193,6 +276,7 @@ async def clear(ctx, q):
         await ctx.channel.purge(limit=(int(q) + 1))
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
+
 @bot.command()
 async def helps(ctx):
     await ctx.channel.purge(limit=1)
@@ -204,6 +288,7 @@ async def helps(ctx):
         o_str += f'Usage: {cmd["usage"]}\n'
         o_str += f'Description: {cmd["description"]}\n\n'
     await ctx.send(o_str)
+
 
 @bot.command()
 async def release(ctx):
