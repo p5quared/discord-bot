@@ -1,4 +1,9 @@
 # :b:MCC Discord :b:ot
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+
 Hello and welcome, _brave souls_,
 
 What lies beyond is the repository which comprises the bot, _"The Sheriff"_ on the BMCC programming club server. This project is really a labor of love started and monitored monitored by yours truly, but maintained by YOU! 
