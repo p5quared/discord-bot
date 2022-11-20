@@ -26,27 +26,40 @@ class TicTacComputer:
         self.rotated = tilt_board(board)
         self.diag = get_diags(board)
 
-    def try_win(self):
-        #  if there is a winning move, take it
-        for i, row in enumerate(self.board):
+    def try_win(self, board=None) -> (
+            bool, tuple[int, int]):
+        if board is None:
+            board = self.board
+        rotated = tilt_board(board)
+        diag = get_diags(board)
+        for i, row in enumerate(board):
             if row.count(1) == 2:
                 return True, (i, row.index(0))
-        for i, row in enumerate(self.rotated):
+        for i, row in enumerate(rotated):
             if row.count(1) == 2:
                 return True, (row.index(0), i)
-        if self.diag[0].count(1) == 2:
-            return True, (self.diag[0].index(0), self.diag[0].index(0))
-        if self.diag[1].count(1) == 2:
-            return True, (self.diag[1].index(0), 2-self.diag[1].index(0))
+        if diag[0].count(1) == 2:
+            return True, (diag[0].index(0), diag[0].index(0))
+        if diag[1].count(1) == 2:
+            return True, (diag[1].index(0), 2 - diag[1].index(0))
 
     def try_block_win(self):
         #  If the opponent is able to win, block their move
         pass
 
-    @staticmethod
-    def open_space(self):
-        # determine if there is an open space to exploit or defend
-        pass
+    def move(self):
+        winnable = self.try_win()
+        if winnable[0]:
+            return winnable[1]
+        else:
+            pass
+
+    def calculate_outcomes(self):
+        winning_outcomes = [[0 for _ in range(3)] for _ in range(3)]
+        for row in self.board:
+            for col in row:
+                if col == 0: # do for all available moves on board
+                    pass
 
 
 if __name__ == '__main__':
