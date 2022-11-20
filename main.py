@@ -1,6 +1,7 @@
 import os
 import asyncio
 import json
+import random
 
 import discord
 from discord.ext import commands
@@ -214,6 +215,55 @@ async def release(ctx):
     _embed = discord.Embed(title="Latest Release Notes:",
                            description=notes)
     await ctx.send(embed=_embed)
+
+
+@bot.command()
+async def rps(ctx):
+    choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️.... 👀"]
+    choices_reg = ["rock", "paper", "scissors"]
+    await ctx.send(f"Rock, paper, or scissors? Choose wisely...🥸")
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in choices_reg
+
+    user_choice = await bot.wait_for('message', check=check)
+    user_choice = user_choice.content
+
+    pc_choice = random.choice(choices_rps)
+    print(f'User Choice: \n{user_choice}')
+    print(f'PC Choice: \n{pc_choice}')
+
+    #   Let's set the conditions for rock
+    if user_choice == 'rock':
+        if "rock" in pc_choice:
+            await ctx.send(f'Wouh!!! we really had to tie 🫥 .\nYour choice: {user_choice}\n my_choice: {pc_choice}')
+        elif "paper" in pc_choice:
+            await ctx.send(
+                f"That's why I'm smarter,you can't beat me 😎 \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+        elif "scissors" in pc_choice:
+            await ctx.send(
+                f"HOLY, You must have used all your luck. Congratulations you win 🎉🥳. \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+    #   Let's set the condition for paper
+    if user_choice == 'paper':
+        if "paper" in pc_choice:
+            await ctx.send(f'Wouh!!! You really wanted to settle for a draw 🫥  .\nYour choice: {user_choice}\n '
+                           f'my_choice: {pc_choice}')
+        elif "scissors" in pc_choice:
+            await ctx.send(
+                f"Welp, what can I say don't me tell you taught you had a chance 😎 \nYour choice: {user_choice}\n "
+                f"my_choice: {pc_choice}")
+        elif "rock" in pc_choice:
+            await ctx.send(
+                f"Their must have been a bugged somewhere, but Congratulations you win 🥳🎉  \nYour choice: {user_choice}\nmy_choice: {pc_choice}")
+    #   Let's set the condition for scissors
+    if user_choice == 'scissors':
+        if "scissors" in pc_choice:
+            await ctx.send(f"Unfortunately it's a tie 🫥  .\n Your choice: {user_choice}\n my_choice: {pc_choice}")
+        elif "rock" in pc_choice:
+            await ctx.send(f" Like we didn't already know that i would win 😎 \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+        elif "paper" in pc_choice:
+            await ctx.send(
+                f"My developer is a newbie I'll let you have this one. Congratulations you win 🥳🎉  \nYour choice: {user_choice}\nmy_choice: {pc_choice}")
 
 
 bot.run(token=_token)
