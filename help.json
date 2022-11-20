@@ -1,8 +1,8 @@
 {
   "help": {
     "name": "Help",
-    "usage": "$help",
-    "description": "Posts this message."
+    "usage": "$help <command-name>",
+    "description": "Use this command to view information about currently working commands."
   },
   "rm": {
     "name": "Role Manage",
@@ -23,5 +23,10 @@
     "name": "Release Notes",
     "usage": "$release",
     "description": "Prints the notes for the latest release."
+  },
+  "feedback": {
+    "name": "Feedback",
+    "usage": "$feedback",
+    "description": "Allows users to send honest feedback which is anonymous."
   }
 }

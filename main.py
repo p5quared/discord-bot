@@ -1,6 +1,8 @@
+import datetime
 import os
 import asyncio
 import json
+import random
 
 import discord
 from discord.ext import commands
@@ -11,10 +13,18 @@ load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='$', intents=_intents)
+bot = Bot(command_prefix='%', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
+
+error = discord.Embed(title="Unknown Error Encountered",
+                      color=15548997,
+                      timestamp=datetime.datetime.now(),
+                      description="There seems to have been an error with the bot.\n"
+                                  "Try your command again, and if the problem persists reach out in the Collaboration"
+                                  "channel, describing your intended use and exact commands entered."
+                      )
 
 
 def read_cache():
@@ -26,6 +36,12 @@ def read_cache():
         roles_cache[role]["embed"] = discord.Embed(title=_title,
                                                    description=_descr)
     return roles_cache
+
+
+def read_config():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    return config
 
 
 def write_cache(live_cache: dict):
@@ -154,7 +170,76 @@ async def send(ctx, kwarg):
         return m.channel == ctx.channel and m.author != bot.user
 
     msg = await bot.wait_for("message", check=check)
+    await ctx.channel.purge(limit=2)
     await target_channel.send(msg.content)
+
+
+@bot.command()
+async def feedback(ctx):
+    """
+    This function sends feedback to a target channel, specified in config.json.
+    Confirms whether desire is to be anonymous or not through reaction flow.
+
+    :param ctx:
+    :return: N/a
+    """
+    await ctx.channel.purge(limit=1)
+    _embed = discord.Embed(
+        title="Confirm Feedback Request",
+        description=f'You are about to submit user feedback.\n'
+                    f'React with the following for your feedback to be anonymous or public:\n'
+                    f'🤐: Anonymous\n'
+                    f'🎤: Public'
+    )
+    msg = await ctx.send(embed=_embed)
+    for r in ['🤐', '🎤']:
+        await msg.add_reaction(r)
+
+    def check_react(reaction, user):
+        return user == ctx.author and str(reaction.emoji) in ['🤐', '🎤']
+
+    try:
+        reaction, user = await bot.wait_for('reaction_add', timeout=60.0, check=check_react)
+    except asyncio.TimeoutError:
+        await ctx.channel.send('Error: request timeout.')
+    else:
+        config = read_config()
+        await ctx.channel.purge(limit=1)
+        if str(reaction.emoji) == '🤐':
+            _embed = discord.Embed(title="Submit Feedback",
+                                   description="You have 90 seconds to enter your feedback. Your message will be "
+                                               "erased and instantly transmitted to a private feedback channel. "
+                                               "\nNote: Your entire feedback must be in ONE message (sent at once). If "
+                                               "you have a large amount of feedback it is suggested you copy and paste "
+                                               "to send it."
+                                               "\nThe entire process is 100% anonymous. There are no records kept "
+                                               "by the bot nor anyone in control of the bot.")
+            await ctx.channel.send(embed=_embed)
+
+            def check(m):
+                return m.author == ctx.author and m.channel == ctx.channel
+
+            try:
+                msg = await bot.wait_for('message', timeout=90.0, check=check)
+            except asyncio.TimeoutError:
+                await ctx.channel.send('Error: request timeout.')
+                await bot.wait_for('reaction_add', timeout=5.0)
+            else:
+                channel = bot.get_channel(config["feedback"]["anonymous"])
+                await channel.send(embed=discord.Embed(title="Feedback Received",
+                                                       timestamp=datetime.datetime.now(),
+                                                       description=msg.content))
+            await ctx.channel.purge(limit=2)
+        elif str(reaction.emoji) == '🎤':
+            await ctx.channel.send("You can send public feedback to the dedicated suggestions-feedback channel.\n:)")
+            try:
+                await bot.wait_for('reaction_add', timeout=5.0)
+            except asyncio.TimeoutError:
+                await ctx.channel.purge(limit=2)
+            else:
+                await ctx.channel.send(embed=error)
+        else:
+            await ctx.channel.send(embed=error)
 
 
 @bot.command()
@@ -192,6 +277,7 @@ async def clear(ctx, q):
         await ctx.channel.purge(limit=(int(q) + 1))
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
+
 @bot.command()
 async def helps(ctx):
     await ctx.channel.purge(limit=1)
@@ -204,6 +290,7 @@ async def helps(ctx):
         o_str += f'Description: {cmd["description"]}\n\n'
     await ctx.send(o_str)
 
+
 @bot.command()
 async def release(ctx):
     await ctx.channel.purge(limit=1)
@@ -213,6 +300,55 @@ async def release(ctx):
     _embed = discord.Embed(title="Latest Release Notes:",
                            description=notes)
     await ctx.send(embed=_embed)
+
+
+@bot.command()
+async def rps(ctx):
+    choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️.... 👀"]
+    choices_reg = ["rock", "paper", "scissors"]
+    await ctx.send(f"Rock, paper, or scissors? Choose wisely...🥸")
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in choices_reg
+
+    user_choice = await bot.wait_for('message', check=check)
+    user_choice = user_choice.content
+
+    pc_choice = random.choice(choices_rps)
+    print(f'User Choice: \n{user_choice}')
+    print(f'PC Choice: \n{pc_choice}')
+
+    #   Let's set the conditions for rock
+    if user_choice == 'rock':
+        if "rock" in pc_choice:
+            await ctx.send(f'Wouh!!! we really had to tie 🫥 .\nYour choice: {user_choice}\n my_choice: {pc_choice}')
+        elif "paper" in pc_choice:
+            await ctx.send(
+                f"That's why I'm smarter,you can't beat me 😎 \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+        elif "scissors" in pc_choice:
+            await ctx.send(
+                f"HOLY, You must have used all your luck. Congratulations you win 🎉🥳. \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+    #   Let's set the condition for paper
+    if user_choice == 'paper':
+        if "paper" in pc_choice:
+            await ctx.send(f'Wouh!!! You really wanted to settle for a draw 🫥  .\nYour choice: {user_choice}\n '
+                           f'my_choice: {pc_choice}')
+        elif "scissors" in pc_choice:
+            await ctx.send(
+                f"Welp, what can I say don't me tell you taught you had a chance 😎 \nYour choice: {user_choice}\n "
+                f"my_choice: {pc_choice}")
+        elif "rock" in pc_choice:
+            await ctx.send(
+                f"Their must have been a bugged somewhere, but Congratulations you win 🥳🎉  \nYour choice: {user_choice}\nmy_choice: {pc_choice}")
+    #   Let's set the condition for scissors
+    if user_choice == 'scissors':
+        if "scissors" in pc_choice:
+            await ctx.send(f"Unfortunately it's a tie 🫥  .\n Your choice: {user_choice}\n my_choice: {pc_choice}")
+        elif "rock" in pc_choice:
+            await ctx.send(f" Like we didn't already know that i would win 😎 \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+        elif "paper" in pc_choice:
+            await ctx.send(
+                f"My developer is a newbie I'll let you have this one. Congratulations you win 🥳🎉  \nYour choice: {user_choice}\nmy_choice: {pc_choice}")
 
 
 bot.run(token=_token)
