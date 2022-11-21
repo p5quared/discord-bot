@@ -89,6 +89,7 @@ async def rm(ctx, arg=None):
     After the message is sent, the ID of the message is automatically cached and
     associated with the desired role from roles.json.
     Note: Calling this function twice for the same role with overwrite the previously cached ID.
+
     :param ctx: automatically passed context argument via discordpy.
     :param arg: represents desired keyword for a pre-made role in cache.
     :return: N/a
