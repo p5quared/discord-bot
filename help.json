@@ -28,5 +28,9 @@
     "name": "Feedback",
     "usage": "$feedback",
     "description": "Allows users to send honest feedback which is anonymous."
+  },
+  "rps": {
+    "name": "Rock-Paper-Scissors",
+    "usage": "$rps",
+    "description": "Let's you play the classic rock-paper-scissors game against a bot."
   }
-}
