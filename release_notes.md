@@ -22,10 +22,14 @@ These are the users who have written some functionality which has been added to 
   * Configured Docker Container/Image
   * Hosting on Fly.io
   * Anonymous Feedback
-
+* Flo03
+  * Added the Rock-Paper-Scissors game
+  
 **All Contributors**
+
 All contributors to BMCC discord bot:
 * p5quared
+* Flo03
 
 **Notes**
 If you would like to join this project to gain experience working with bots, servers, and git, feel free to reach out in the **collaboration** channel in the BMCC discord.
