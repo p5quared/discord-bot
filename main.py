@@ -285,17 +285,6 @@ async def clear(ctx, q):
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
 
-@bot.command()
-async def helps(ctx):
-    await ctx.channel.purge(limit=1)
-    await ctx.send("Here is a list of the currently implemented commands:")
-    o_str = ''
-    print(help_file)
-    for cmd in help_file.values():
-        o_str += f'Name: {cmd["name"]}\n'
-        o_str += f'Usage: {cmd["usage"]}\n'
-        o_str += f'Description: {cmd["description"]}\n\n'
-    await ctx.send(o_str)
 
 
 @bot.command()
