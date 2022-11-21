@@ -13,7 +13,7 @@ load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='%', intents=_intents)
+bot = Bot(command_prefix='$', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
@@ -177,10 +177,9 @@ async def send(ctx, kwarg):
 @bot.command()
 async def feedback(ctx):
     """
-    This function sends feedback to a target channel, specified in config.json.
-    Confirms whether desire is to be anonymous or not through reaction flow.
+    Send anonymous feedback to be reviewed by moderators.
 
-    :param ctx:
+    :param ctx: automatically passed context argument
     :return: N/a
     """
     await ctx.channel.purge(limit=1)
@@ -245,6 +244,14 @@ async def feedback(ctx):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def clear(ctx, q):
+    """
+    Clear channel of messages.
+    Requires administrator permissions.
+
+    :param ctx: automatically passed context argument
+    :param q: quantity to clear [n, 'all']
+    :return:
+    """
     if q == 'all':
         _embed = discord.Embed(
             title=f'Purging {ctx.channel}...\n'
@@ -293,6 +300,12 @@ async def helps(ctx):
 
 @bot.command()
 async def release(ctx):
+    '''
+    Display most recent release notes.
+
+    :param ctx:
+    :return: N/a
+    '''
     await ctx.channel.purge(limit=1)
     with open("release_notes.md", "r") as f:
         notes = f.read()
