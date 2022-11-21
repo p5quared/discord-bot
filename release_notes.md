@@ -1,15 +1,16 @@
-**1.1 Release Notes (Sunday, Nov 20)**
+**1.1 Release Notes (Monday, Nov 21)**
 
-Below are the latest updates in bot version 1.0.
+Below are the latest updates in bot version 1.1:
 
 
 **The following functions have been added:**
 * feedback - send anonymous feedback to be reviewed by officers
+* rps - play rock paper scissors vs bot
 
 
 **The following functions have been modified:**
 
-* helps
+* helps has been removed in favor of the default "help"
 
 **Upcoming Goals**
 * Polling
@@ -22,6 +23,8 @@ These are the users who have written some functionality which has been added to 
   * Configured Docker Container/Image
   * Hosting on Fly.io
   * Anonymous Feedback
+  * documentation to support default "help" command
+
 * Flo03
   * Added the Rock-Paper-Scissors game
   
