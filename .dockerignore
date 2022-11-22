@@ -1,0 +1,9 @@
+# flyctl launch added from .gitignore
+# **/.env this must be ignored for docker image to build correctly
+**/.idea
+**/venv
+**/*.pyc
+
+# flyctl launch added from venv/.gitignore
+# created by virtualenv automatically
+venv/**/*
