@@ -4,6 +4,7 @@ import asyncio
 import json
 import random
 
+
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -307,9 +308,14 @@ async def release(ctx):
 
 @bot.command()
 async def rps(ctx):
-    choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️.... 👀"]
+    embed=discord.Embed(
+        title="Welcome to the Rock-Paper-Scissors game !!!",
+        description="Rock, Paper, or Scissors? Choose wisely ... 🥸",
+        color= discord.Colour.yellow()
+    )
+    choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️"]
     choices_reg = ["rock", "paper", "scissors"]
-    await ctx.send(f"Rock, paper, or scissors? Choose wisely...🥸")
+    await ctx.send(embed=embed)
 
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in choices_reg
@@ -324,34 +330,62 @@ async def rps(ctx):
     #   Let's set the conditions for rock
     if user_choice == 'rock':
         if "rock" in pc_choice:
-            await ctx.send(f'Wouh!!! we really had to tie 🫥 .\nYour choice: {user_choice}\n my_choice: {pc_choice}')
+            await ctx.send(f"Woah!!! we really had to tie 🫥.\n Your choice:")
+            await ctx.send(file=discord.File('ro.jpg'))
+            await ctx. send("Bots choice:")
+            await ctx.send( file=discord.File('ro.jpg'))
         elif "paper" in pc_choice:
             await ctx.send(
-                f"That's why I'm smarter,you can't beat me 😎 \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+                f"I'm smarter that's why I WIN,you can't beat me 😎 \nYour choice:")
+            await ctx.send(file=discord.File('ro.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('pap.jpg'))
         elif "scissors" in pc_choice:
             await ctx.send(
-                f"HOLY, You must have used all your luck. Congratulations you win 🎉🥳. \nYour choice: {user_choice}\n my_choice: {pc_choice}")
-    #   Let's set the condition for paper
+                f"HOLY, You must have used all your luck. Congratulations you win 🎉🥳. \nYour choice: ")
+            await ctx.send(file=discord.File('ro.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('sci.jpg'))
+
+
+    #   Let's set the conditions for paper
     if user_choice == 'paper':
         if "paper" in pc_choice:
-            await ctx.send(f'Wouh!!! You really wanted to settle for a draw 🫥  .\nYour choice: {user_choice}\n '
-                           f'my_choice: {pc_choice}')
+            await ctx.send(f'Wouh!!! You really wanted to settle for a draw 🫥  .\nYour choice: ')
+            await ctx.send(file=discord.File('pap.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('pap.jpg'))
         elif "scissors" in pc_choice:
-            await ctx.send(
-                f"Welp, what can I say don't me tell you taught you had a chance 😎 \nYour choice: {user_choice}\n "
-                f"my_choice: {pc_choice}")
+            await ctx.send(f"Welp, what can I say don't me tell you taught you had a chance 😎 \nYour choice: ")
+            await ctx.send(file=discord.File('pap.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('sci.jpg'))
         elif "rock" in pc_choice:
             await ctx.send(
-                f"Their must have been a bugged somewhere, but Congratulations you win 🥳🎉  \nYour choice: {user_choice}\nmy_choice: {pc_choice}")
-    #   Let's set the condition for scissors
+                f"Their must have been a bugged somewhere, but Congratulations you win 🥳🎉  \nYour choice:")
+            await ctx.send(file=discord.File('pap.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('ro.jpg'))
+
+    #   Let's set the conditions for scissors
     if user_choice == 'scissors':
         if "scissors" in pc_choice:
-            await ctx.send(f"Unfortunately it's a tie 🫥  .\n Your choice: {user_choice}\n my_choice: {pc_choice}")
+            await ctx.send(f"Unfortunately it's a tie 🫥  .\n Your choice: ")
+            await ctx.send(file=discord.File('sci.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('sci.jpg'))
         elif "rock" in pc_choice:
-            await ctx.send(f" Like we didn't already know that i would win 😎 \nYour choice: {user_choice}\n my_choice: {pc_choice}")
+            await ctx.send(
+                f" Like we didn't already know that i would win 😎 \nYour choice: ")
+            await ctx.send(file=discord.File('sci.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('ro.jpg'))
         elif "paper" in pc_choice:
             await ctx.send(
-                f"My developer is a newbie I'll let you have this one. Congratulations you win 🥳🎉  \nYour choice: {user_choice}\nmy_choice: {pc_choice}")
+                f"My developer is a newbie so I'll let you have this one 🥳🎉\nYour choice: ")
+            await ctx.send(file=discord.File('sci.jpg'))
+            await ctx.send("Bot choice:")
+            await ctx.send(file=discord.File('pap.jpg'))
 
 
 bot.run(token=_token)
