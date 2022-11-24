@@ -22,6 +22,16 @@
     },
     "ID": 1039618931800940625
   },
+    "website": {
+      "embed": {
+        "title": "React/un-react to opt in or out of the website-programming team!",
+        "description": "Howdy fellers! The time has come to develop a new website for the BMCC programming club. By reacting to this message, you'll gain a @role which will be used for communicating on this topic. Programmers of all current skill levels are highly encouraged to join; there will be opportunities for everyone to collaborate in some way.\nHappy programming!"
+      },
+      "reacts": {
+        "\ud83d\udd35": "Website"
+      },
+      "ID": 0
+  },
   "test1": {
     "embed": {
       "title": "Role Reaction Testing",
