@@ -83,13 +83,17 @@ async def on_message(message):
 
 
 @bot.command()
+@commands.has_permissions(administrator=True)
 async def rm(ctx, arg=None):
     """
     This function posts react-role managers.
     They must be preconfigured and are extracted from "roles.json" on bot startup.
     After the message is sent, the ID of the message is automatically cached and
     associated with the desired role from roles.json.
+
     Note: Calling this function twice for the same role with overwrite the previously cached ID.
+    (for now, only one instance of a role-react may exist at a time).
+    Note: When pushing changes to live-server, make sure that the ID's in roles.json match existing ID's
 
     :param ctx: automatically passed context argument via discordpy.
     :param arg: represents desired keyword for a pre-made role in cache.
