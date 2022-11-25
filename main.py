@@ -11,10 +11,10 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 load_dotenv()
-_token = os.environ['DISCORD_TOKEN_T']
+_token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='!', intents=_intents)
+bot = Bot(command_prefix='$', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)

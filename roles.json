@@ -1,7 +1,7 @@
 {
   "sa": {
     "embed": {
-      "title": "Please select/react to the BMCC status that suits you.",
+      "title": "Please select/react to the BMCC status which best suits you.",
       "description": ":notebook: - Student\n:mortar_board: - Alumni\nNote: Picking a role indicates that you have read, and agreed to our rules, and thus, grants you access to the channels of this server. Happy coding!"
     },
     "reacts": {
@@ -12,7 +12,7 @@
   },
   "gender": {
     "embed": {
-      "title": "Select/react to the gender identity which best suits you",
+      "title": "Select/react to the gender identity which best suits you.",
       "description": "This makes it easier for us to make certain channels accessible to you, like AcmW which is a group for Women & non-binaries.\nWe will work to ensure this club is a safe space for all members.\n:blue_circle: He/Him\n:purple_circle: She/Her\n:green_circle: They/Them"
     },
     "reacts": {
