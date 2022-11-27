@@ -8,7 +8,7 @@
       "\ud83d\udcd3": "Member",
       "\ud83c\udf93": "Alumni"
     },
-    "ID": 1039618814171697232
+    "ID": 1045770124268937236
   },
   "gender": {
     "embed": {
@@ -20,7 +20,7 @@
       "\ud83d\udfe3": "She/Her",
       "\ud83d\udfe2": "They/Them"
     },
-    "ID": 1039618931800940625
+    "ID": 1045771129496809492
   },
   "website": {
     "embed": {
@@ -28,9 +28,9 @@
       "description": "Howdy fellers! The time has come to develop a new website for the BMCC programming club. Reacting with \ud83d\udd78 will toggle your access to a private text-channel for discussion, planning, and development of the new BMCC programming club website, and also add a new @role so we may mention the sub-group."
     },
     "reacts": {
-      "\ud83d\udd78": "Website"
+      "\ud83d\udd78": "WebsiteTeam"
     },
-    "ID": 1045566027779559454
+    "ID": 1045771635707359332
   },
   "test1": {
     "embed": {
