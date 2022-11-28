@@ -2,3 +2,5 @@
 .idea/
 venv
 *.pyc
+lib
+bin
