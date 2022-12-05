@@ -11,10 +11,10 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 load_dotenv()
-_token = os.environ["DISCORD_TOKEN"]
+_token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='!', intents=_intents)
+bot = Bot(command_prefix='$', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
@@ -55,10 +55,35 @@ def write_cache(live_cache: dict):
     with open("roles.json", "w") as f:
         json.dump(live_cache, f, indent=2)
 
+#Add documentation before pull request !!!
+async def zoom_link():
+    now = datetime.datetime.weekday(datetime.datetime.now())
+    if now == 0:
+        #then = now + datetime.timedelta(days=0) #Remove the day for instant test
+        #then = now.replace(hour=1,minute=48)
+        #wait_time = (then-now).total_seconds()
+        #await asyncio.sleep(wait_time)
+
+        channel = bot.get_channel(1046243880057712686)
+        await channel.send("Zoom Link")
+        time = datetime.datetime.now()
+        await channel.send(time)
+        
+'''
+    then = now + datetime.timedelta(days=0) #Remove the day for instant test
+    then = now.replace(hour=23,minute=55)
+    wait_time = (then-now).total_seconds()
+    await asyncio.sleep(wait_time)
+
+    channel = bot.get_channel(1046243880057712686)
+    await channel.send("Zoom Link")
+'''
+
 
 @bot.event
 async def on_ready():
     print(f'Bot is logged in as {bot.user}')
+    await zoom_link()
 
 
 @bot.event
@@ -83,13 +108,17 @@ async def on_message(message):
 
 
 @bot.command()
+@commands.has_permissions(administrator=True)
 async def rm(ctx, arg=None):
     """
     This function posts react-role managers.
     They must be preconfigured and are extracted from "roles.json" on bot startup.
     After the message is sent, the ID of the message is automatically cached and
     associated with the desired role from roles.json.
+
     Note: Calling this function twice for the same role with overwrite the previously cached ID.
+    (for now, only one instance of a role-react may exist at a time).
+    Note: When pushing changes to live-server, make sure that the ID's in roles.json match existing ID's
 
     :param ctx: automatically passed context argument via discordpy.
     :param arg: represents desired keyword for a pre-made role in cache.
