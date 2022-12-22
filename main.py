@@ -55,30 +55,22 @@ def write_cache(live_cache: dict):
     with open("roles.json", "w") as f:
         json.dump(live_cache, f, indent=2)
 
-#Add documentation before pull request !!!
-async def zoom_link():
-    now = datetime.datetime.weekday(datetime.datetime.now())
-    if now == 0:
-        #then = now + datetime.timedelta(days=0) #Remove the day for instant test
-        #then = now.replace(hour=1,minute=48)
-        #wait_time = (then-now).total_seconds()
-        #await asyncio.sleep(wait_time)
+#Below is the code for sending ZOOM LINK by Abir
+async def zoom_link():    
+    now = datetime.datetime.weekday(datetime.datetime.now())    #Assigned now that return a number between 0 - 6 depending on the current time. Current time given as argument inside parenthesis.
+    if now == 2:  #0 == monday, 1 == tues, 2 == for wed ... sunday == 6.  
+        #Below, the code is for sending a message at a specific time  
+        time_now = datetime.datetime.now()   #Assigning timenow with current time as value
+        then = time_now.replace(hour=10,minute=00)   #Assigning then with specific time we want the message to be executed
+        wait_time = (then-time_now).total_seconds() #(then - timenow) will return amount of time(in seconds) for the program to wait till reaching the given time in order to execute the message 
+        await asyncio.sleep(wait_time) #asyncio.sleep will delay the program for the amount of time assigned in var wait_time
 
-        channel = bot.get_channel(1046243880057712686)
-        await channel.send("Zoom Link")
-        time = datetime.datetime.now()
-        await channel.send(time)
-        
-'''
-    then = now + datetime.timedelta(days=0) #Remove the day for instant test
-    then = now.replace(hour=23,minute=55)
-    wait_time = (then-now).total_seconds()
-    await asyncio.sleep(wait_time)
+        #Displaying message to users 
+        channel = bot.get_channel(1046243880057712686) #The ID for the channel we want the message to display
+        await channel.send("Hey Fellow Programmers! Join Today's Club meeting by clicking the Zoom link below:")
+        await channel.send("Link: https://bmcc-cuny.zoom.us/j/89372621235?pwd=UU1CTXphUm5qSjRMTk5oNFZsVjdwdz09")
 
-    channel = bot.get_channel(1046243880057712686)
-    await channel.send("Zoom Link")
-'''
-
+      
 
 @bot.event
 async def on_ready():
