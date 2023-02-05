@@ -6,8 +6,8 @@ import random
 
 
 import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext import commands, tasks
+from discord.ext.commands import Bot 
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -55,27 +55,25 @@ def write_cache(live_cache: dict):
     with open("roles.json", "w") as f:
         json.dump(live_cache, f, indent=2)
 
-#Below is the code for sending ZOOM LINK by Abir
-async def zoom_link():    
-    now = datetime.datetime.weekday(datetime.datetime.now())    #Assigned now that return a number between 0 - 6 depending on the current time. Current time given as argument inside parenthesis.
-    if now == 2:  #0 == monday, 1 == tues, 2 == for wed ... sunday == 6.  
-        #Below, the code is for sending a message at a specific time  
-        time_now = datetime.datetime.now()   #Assigning timenow with current time as value
-        then = time_now.replace(hour=10,minute=00)   #Assigning then with specific time we want the message to be executed
-        wait_time = (then-time_now).total_seconds() #(then - timenow) will return amount of time(in seconds) for the program to wait till reaching the given time in order to execute the message 
-        await asyncio.sleep(wait_time) #asyncio.sleep will delay the program for the amount of time assigned in var wait_time
+#Below, the code for sending weekly ZOOM_LINK by Abir
+@tasks.loop(hours=24)  #This line creates the loop that will iterate every 24 hour when program is running
+async def zoom_link():
+    now = datetime.datetime.weekday(datetime.datetime.now()) #return a number between 0 - 6 depending on the current time. Current time given as argument inside parenthesis.
+    if (now == 2): #0 == monday, 1 == tues, 2 == for wed ... sunday == 6. 
+        time_now = datetime.datetime.now() #Assigning current time 
+        then = time_now.replace(hour=10, minute=0) #Assigning specific time we want the message to be executed
+        wait_time = (then-time_now).total_seconds() #amount of time(in seconds) for the program to wait to execute the message 
+        await asyncio.sleep(wait_time) #delay the program for the time assigned in variable wait_time (in seconds)
 
-        #Displaying message to users 
-        channel = bot.get_channel(1046243880057712686) #The ID for the channel we want the message to display
+        channel = bot.get_channel(1046243880057712686) 
         await channel.send("Hey Fellow Programmers! Join Today's Club meeting by clicking the Zoom link below:")
         await channel.send("Link: https://bmcc-cuny.zoom.us/j/89372621235?pwd=UU1CTXphUm5qSjRMTk5oNFZsVjdwdz09")
 
-      
 
 @bot.event
 async def on_ready():
     print(f'Bot is logged in as {bot.user}')
-    await zoom_link()
+    zoom_link.start() #IMPORTANT: This will start the loop and iterate zoom_link function every 24 hour when program is running.
 
 
 @bot.event
