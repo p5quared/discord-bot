@@ -40,8 +40,13 @@ For obvious reasons, we don't want our changes to affect the live version of _Th
 * Whenever you want, you can paste this link into your browser and then you will be able to add the bot to servers where you have permission to do so.
 ### Setup Your Repo
 Because we have a number of people working on a number of different functions, we utilize git to keep things organized. Here's what we will do to get started:
-1. Fork the "next-release" branch.
-2. Clone _your_ fork to your computer.
+
+1. Fork this repo.
+2. Create a branch named <name_of_feature>
+3. Make your changes.
+4. Submite a pull request to the development branch.
+5. Await review.
+
 ### Project Configuration
 There are a couple changes we'll make to your code to make things run smoothly.
 
