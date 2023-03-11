@@ -295,12 +295,12 @@ async def clear(ctx, q):
 
 @bot.command()
 async def release(ctx):
-    '''
+    """
     Display most recent release notes.
 
     :param ctx:
     :return: N/a
-    '''
+    """
     await ctx.channel.purge(limit=1)
     with open("release_notes.md", "r") as f:
         notes = f.read()
