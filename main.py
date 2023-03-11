@@ -414,20 +414,44 @@ async def rps(ctx):
 #             await ctx.send("Congrats you found the number")
 
 
+
 @bot.command()
 async def grps(ctx):
+    group_size = 4
+    min_group_size = 2
+
     embed = discord.Embed(
         title="Group generator",
         description="React to the message to get assigned in a group",
         color=discord.Colour.yellow()
     )
-    reaction = '🆗'
+    reaction = '👍'
     message = await ctx.send(embed=embed)
     await message.add_reaction(reaction)
 
+    def check(reaction, user):
+        return user != bot.user and str(reaction.emoji) == reaction and reaction.message.id == message.id
 
-
-
+    while True:
+        reaction, user = await bot.wait_for('reaction_add', check=check)
+        members = await reaction.users().flatten()
+        # Remove the bot from the list of members
+        members.remove(bot.user)
+        # If there are not enough members for a group, do nothing
+        if len(members) < min_group_size:
+            continue
+        # If there are enough members, but not enough for a full group, make a group with all of them
+        elif len(members) < group_size:
+            group = ", ".join(member.mention for member in members)
+            await user.send(f"You are in a group with {group}")
+        # If there are enough members for multiple groups, split them into groups
+        else:
+            # Shuffle the list of members to assign them randomly to groups
+            random.shuffle(members)
+            groups = [members[i:i + group_size] for i in range(0, len(members), group_size)]
+            for i, group in enumerate(groups):
+                group_str = ", ".join(member.mention for member in group)
+                await group[0].send(f"You are in group {i + 1} with {group_str}")
 
 
 bot.run(token=_token)
