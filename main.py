@@ -4,7 +4,6 @@ import asyncio
 import json
 import random
 
-
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -14,7 +13,7 @@ load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='$', intents=_intents)
+bot = Bot(command_prefix='%', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
@@ -291,8 +290,6 @@ async def clear(ctx, q):
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
 
-
-
 @bot.command()
 async def release(ctx):
     """
@@ -312,10 +309,10 @@ async def release(ctx):
 
 @bot.command()
 async def rps(ctx):
-    embed=discord.Embed(
+    embed = discord.Embed(
         title="Welcome to the Rock-Paper-Scissors game !!!",
         description="Rock, Paper, or Scissors? Choose wisely ... 🥸",
-        color= discord.Colour.yellow()
+        color=discord.Colour.yellow()
     )
     choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️"]
     choices_reg = ["rock", "paper", "scissors"]
@@ -336,7 +333,7 @@ async def rps(ctx):
         if "rock" in pc_choice:
             await ctx.send(f"Woah!!! we really had to tie 🫥.\n Your choice:")
             await ctx.send(file=discord.File('assets/ro.jpg'))
-            await ctx. send("Bots choice:")
+            await ctx.send("Bots choice:")
             await ctx.send(file=discord.File('assets/ro.jpg'))
         elif "paper" in pc_choice:
             await ctx.send(
@@ -350,7 +347,6 @@ async def rps(ctx):
             await ctx.send(file=discord.File('assets/ro.jpg'))
             await ctx.send("Bot choice:")
             await ctx.send(file=discord.File('assets/sci.jpg'))
-
 
     #   Let's set the conditions for paper
     if user_choice == 'paper':
@@ -390,6 +386,72 @@ async def rps(ctx):
             await ctx.send(file=discord.File('assets/sci.jpg'))
             await ctx.send("Bot choice:")
             await ctx.send(file=discord.File('assets/pap.jpg'))
+
+
+# @bot.command()
+# async def guess(ctx):
+#     embed = discord.Embed(
+#         title="Guessing Game 🥸👀",
+#         description="Try and guess the number I'm thinking.🤔\nYou only get 3 chances to guess the correct number."
+#                     "\nDkn what to put yet!!!",
+#
+#         color=discord.Colour.red()
+#     )
+#     tries = 3
+#     number = random.randrange(50)                                   STILL  UNDER WORK
+#     amount_tries = 0
+#     await ctx.send(embed=embed)
+#
+#     def check(msg):
+#         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower()
+#
+#     user_choice = await bot.wait_for('message', check=check)
+#     while tries == 3:
+#         user_choice = await bot.wait_for('message', check=check)
+#         user_choice = user_choice.content
+#         print("hello")
+#         if user_choice == number:
+#             await ctx.send("Congrats you found the number")
+
+
+
+@bot.command()
+async def grps(ctx):
+    group_size = 4
+    min_group_size = 2
+
+    embed = discord.Embed(
+        title="Group generator",
+        description="React to the message to get assigned in a group",
+        color=discord.Colour.yellow()
+    )
+    reaction = '👍'
+    message = await ctx.send(embed=embed)
+    await message.add_reaction(reaction)
+
+    def check(reaction, user):
+        return user != bot.user and str(reaction.emoji) == reaction and reaction.message.id == message.id
+
+    while True:
+        reaction, user = await bot.wait_for('reaction_add', check=check)
+        members = await reaction.users().flatten()
+        # Remove the bot from the list of members
+        members.remove(bot.user)
+        # If there are not enough members for a group, do nothing
+        if len(members) < min_group_size:
+            continue
+        # If there are enough members, but not enough for a full group, make a group with all of them
+        elif len(members) < group_size:
+            group = ", ".join(member.mention for member in members)
+            await user.send(f"You are in a group with {group}")
+        # If there are enough members for multiple groups, split them into groups
+        else:
+            # Shuffle the list of members to assign them randomly to groups
+            random.shuffle(members)
+            groups = [members[i:i + group_size] for i in range(0, len(members), group_size)]
+            for i, group in enumerate(groups):
+                group_str = ", ".join(member.mention for member in group)
+                await group[0].send(f"You are in group {i + 1} with {group_str}")
 
 
 bot.run(token=_token)
