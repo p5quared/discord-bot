@@ -6,8 +6,8 @@ import random
 
 
 import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext import commands, tasks
+from discord.ext.commands import Bot 
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -55,10 +55,25 @@ def write_cache(live_cache: dict):
     with open("roles.json", "w") as f:
         json.dump(live_cache, f, indent=2)
 
+#Below, the code for sending weekly ZOOM_LINK by Abir
+@tasks.loop(hours=24)  #This line creates the loop that will iterate every 24 hour when program is running
+async def zoom_link():
+    now = datetime.datetime.weekday(datetime.datetime.now()) #return a number between 0 - 6 depending on the current time. Current time given as argument inside parenthesis.
+    if (now == 2): #0 == monday, 1 == tues, 2 == for wed ... sunday == 6. 
+        time_now = datetime.datetime.now() #Assigning current time 
+        then = time_now.replace(hour=10, minute=0) #Assigning specific time we want the message to be executed
+        wait_time = (then-time_now).total_seconds() #amount of time(in seconds) for the program to wait to execute the message 
+        await asyncio.sleep(wait_time) #delay the program for the time assigned in variable wait_time (in seconds)
+
+        channel = bot.get_channel(1046243880057712686) 
+        await channel.send("Hey Fellow Programmers! Join Today's Club meeting by clicking the Zoom link below:")
+        await channel.send("Link: https://bmcc-cuny.zoom.us/j/89372621235?pwd=UU1CTXphUm5qSjRMTk5oNFZsVjdwdz09")
+
 
 @bot.event
 async def on_ready():
     print(f'Bot is logged in as {bot.user}')
+    zoom_link.start() #IMPORTANT: This will start the loop and iterate zoom_link function every 24 hour when program is running.
 
 
 @bot.event
