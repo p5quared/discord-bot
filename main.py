@@ -309,6 +309,11 @@ async def release(ctx):
 
 @bot.command()
 async def rps(ctx):
+    """
+    This function allows you to play Rock-Paper-Scissors with the discord bot.
+    :param ctx:
+    :return: N/A
+    """
     embed = discord.Embed(
         title="Welcome to the Rock-Paper-Scissors game !!!",
         description="Rock, Paper, or Scissors? Choose wisely ... 🥸",
@@ -414,44 +419,84 @@ async def rps(ctx):
 #             await ctx.send("Congrats you found the number")
 
 
-
 @bot.command()
-async def grps(ctx):
-    group_size = 4
-    min_group_size = 2
+async def grps(ctx, size, min_size):
+    """
+    :param ctx: automatically passed context argument
+    :param size: defines the maximum size of the group
+    :param min_size: defines the minimum size of the group
+    :return: Nothing
+    """
+    # Define a function to check for valid integer inputs
+    def is_valid_int(input_str):
+        try:
+            input_int = int(input_str)
+            return input_int > 0
+        except ValueError:
+            return False
 
+    # Check that the size and min_size arguments are valid integers
+    if not is_valid_int(size) or not is_valid_int(min_size):
+        await ctx.send("Please enter valid integer arguments for size and min_size.")
+        return
+
+    # Convert the size and min_size arguments to integers
+    size = int(size)
+    min_size = int(min_size)
+
+    # Create an embed for the message to react to
     embed = discord.Embed(
         title="Group generator",
-        description="React to the message to get assigned in a group",
+        description="React to this message to get assigned to a group.",
         color=discord.Colour.yellow()
     )
-    reaction = '👍'
+
+    # Send the message and add the reaction
     message = await ctx.send(embed=embed)
-    await message.add_reaction(reaction)
+    await message.add_reaction('👍')
 
+    # Define a function to check for valid reactions from non-bot users
     def check(reaction, user):
-        return user != bot.user and str(reaction.emoji) == reaction and reaction.message.id == message.id
+        return user != bot.user and str(reaction.emoji) == '👍' and reaction.message.id == message.id
 
-    while True:
-        reaction, user = await bot.wait_for('reaction_add', check=check)
-        members = await reaction.users().flatten()
-        # Remove the bot from the list of members
-        members.remove(bot.user)
-        # If there are not enough members for a group, do nothing
-        if len(members) < min_group_size:
-            continue
-        # If there are enough members, but not enough for a full group, make a group with all of them
-        elif len(members) < group_size:
-            group = ", ".join(member.mention for member in members)
-            await user.send(f"You are in a group with {group}")
-        # If there are enough members for multiple groups, split them into groups
-        else:
-            # Shuffle the list of members to assign them randomly to groups
-            random.shuffle(members)
-            groups = [members[i:i + group_size] for i in range(0, len(members), group_size)]
-            for i, group in enumerate(groups):
-                group_str = ", ".join(member.mention for member in group)
-                await group[0].send(f"You are in group {i + 1} with {group_str}")
+    # Wait for reactions for 3 minutes
+    try:
+        reaction, user = await bot.wait_for('reaction_add', timeout=30, check=check)
+    except asyncio.TimeoutError:
+        await ctx.send("No one reacted to the message in time.")
+        return
+
+    # Add all users who reacted to it  and remove the bot from the list
+    members = []
+    async for user in reaction.users():
+        if user != bot.user:
+            members.append(user)
+
+    members = [await bot.fetch_user(member.id) for member in members]
+
+    # Check if there are enough members to form a group
+    if len(members) < min_size:
+        await ctx.send("Not enough people reacted to form a group.")
+        return
+
+    # If there are enough members, but not enough to form a full group, make a group with all of them
+    elif len(members) < size:
+        group_str = ", ".join(member.mention for member in members)
+        for member in members:
+            await member.send(f"{member.mention}, you are in a group with {group_str}")
+        return
+
+    # If there are enough members for multiple groups, split them into groups
+    else:
+        random.shuffle(members)
+        num_groups = len(members) // size + int(len(members) % size != 0)
+        groups = [members[i * size:(i + 1) * size] for i in range(num_groups)]
+
+        # Send a message to each member of each group
+        for i, group in enumerate(groups):
+            group_str = ", ".join(member.mention for member in group)
+            for member in group:
+                await member.send(f"{member.mention}, you are in group {i + 1} with {group_str}")
 
 
 bot.run(token=_token)
