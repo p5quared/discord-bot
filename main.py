@@ -462,10 +462,10 @@ async def grps(ctx, size, min_size):
     def check(reaction, user):
         return user != bot.user and str(reaction.emoji) in ['👍', '🛑'] and reaction.message.id == message.id
 
-    # Wait for reactions for 3 minutes
+    # Wait for reactions for 1 minute
     try:
         while True:
-            reaction, user = await bot.wait_for('reaction_add', timeout=30, check=check)
+            reaction, user = await bot.wait_for('reaction_add', timeout=60, check=check)
 
             # If someone presses the stop button, shuffle members into groups
             if str(reaction.emoji) == '🛑':
