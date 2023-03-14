@@ -439,7 +439,7 @@ async def grps(ctx, size, min_size):
 
     # Check that the size and min_size arguments are valid integers
     if not is_valid_int(size) or not is_valid_int(min_size):
-        await ctx.send("Please enter valid integer arguments for size and min_size.")
+        await ctx.send("Please enter valid integer arguments for the minimum and maximum size of the group .")
         return
 
     # Convert the size and min_size arguments to integers
@@ -449,7 +449,7 @@ async def grps(ctx, size, min_size):
     # Create an embed for the message to react to
     embed = discord.Embed(
         title="Group generator",
-        description="React to this message to get assigned to a group. Press 🛑 to stop the program and shuffle members into groups.",
+        description="React to this message to get assigned to a group. Press 🛑 to stop the program",
         color=discord.Colour.yellow()
     )
 
@@ -477,7 +477,7 @@ async def grps(ctx, size, min_size):
                 for i, group in enumerate(groups):
                     group_str = ", ".join(member.mention for member in group)
                     for member in group:
-                        await member.send(f"{member.mention}, you are in group {i + 1} with {group_str}")
+                        await member.send(f"{member.mention}. You are in group {i + 1} with: {group_str} ")
 
                 # Send a message to the channel that the groups have been formed
                 await ctx.send("Groups have been formed!")
@@ -493,7 +493,7 @@ async def grps(ctx, size, min_size):
                 members = [await bot.fetch_user(member.id) for member in members]
 
     except asyncio.TimeoutError:
-        await ctx.send("No one reacted to the message in time.")
+        await ctx.send("Group forming has been closed...")
         return
 
     # Check if there are enough members to form a group
