@@ -427,6 +427,8 @@ async def grps(ctx, size, min_size):
     :param min_size: defines the minimum size of the group
     :return: Nothing
     """
+    import random
+
     # Define a function to check for valid integer inputs
     def is_valid_int(input_str):
         try:
@@ -447,32 +449,52 @@ async def grps(ctx, size, min_size):
     # Create an embed for the message to react to
     embed = discord.Embed(
         title="Group generator",
-        description="React to this message to get assigned to a group.",
+        description="React to this message to get assigned to a group. Press 🛑 to stop the program and shuffle members into groups.",
         color=discord.Colour.yellow()
     )
 
-    # Send the message and add the reaction
+    # Send the message and add the reactions
     message = await ctx.send(embed=embed)
     await message.add_reaction('👍')
+    await message.add_reaction('🛑')
 
     # Define a function to check for valid reactions from non-bot users
     def check(reaction, user):
-        return user != bot.user and str(reaction.emoji) == '👍' and reaction.message.id == message.id
+        return user != bot.user and str(reaction.emoji) in ['👍', '🛑'] and reaction.message.id == message.id
 
     # Wait for reactions for 3 minutes
     try:
-        reaction, user = await bot.wait_for('reaction_add', timeout=30, check=check)
+        while True:
+            reaction, user = await bot.wait_for('reaction_add', timeout=30, check=check)
+
+            # If someone presses the stop button, shuffle members into groups
+            if str(reaction.emoji) == '🛑':
+                random.shuffle(members)
+                num_groups = len(members) // size + int(len(members) % size != 0)
+                groups = [members[i * size:(i + 1) * size] for i in range(num_groups)]
+
+                # Send a message to each member of each group
+                for i, group in enumerate(groups):
+                    group_str = ", ".join(member.mention for member in group)
+                    for member in group:
+                        await member.send(f"{member.mention}, you are in group {i + 1} with {group_str}")
+
+                # Send a message to the channel that the groups have been formed
+                await ctx.send("Groups have been formed!")
+                break
+
+            # If someone presses the join button, add them to the members list
+            elif str(reaction.emoji) == '👍':
+                members = []
+                async for user in reaction.users():
+                    if user != bot.user:
+                        members.append(user)
+
+                members = [await bot.fetch_user(member.id) for member in members]
+
     except asyncio.TimeoutError:
         await ctx.send("No one reacted to the message in time.")
         return
-
-    # Add all users who reacted to it  and remove the bot from the list
-    members = []
-    async for user in reaction.users():
-        if user != bot.user:
-            members.append(user)
-
-    members = [await bot.fetch_user(member.id) for member in members]
 
     # Check if there are enough members to form a group
     if len(members) < min_size:
@@ -483,20 +505,7 @@ async def grps(ctx, size, min_size):
     elif len(members) < size:
         group_str = ", ".join(member.mention for member in members)
         for member in members:
-            await member.send(f"{member.mention}, you are in a group with {group_str}")
-        return
-
-    # If there are enough members for multiple groups, split them into groups
-    else:
-        random.shuffle(members)
-        num_groups = len(members) // size + int(len(members) % size != 0)
-        groups = [members[i * size:(i + 1) * size] for i in range(num_groups)]
-
-        # Send a message to each member of each group
-        for i, group in enumerate(groups):
-            group_str = ", ".join(member.mention for member in group)
-            for member in group:
-                await member.send(f"{member.mention}, you are in group {i + 1} with {group_str}")
+            await member.send(f"{member.mention}, you are in")
 
 
 bot.run(token=_token)
