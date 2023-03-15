@@ -4,7 +4,6 @@ import asyncio
 import json
 import random
 
-
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -14,7 +13,7 @@ load_dotenv()
 _token = os.environ['DISCORD_TOKEN']
 _intents = discord.Intents.default()
 _intents.message_content = True
-bot = Bot(command_prefix='$', intents=_intents)
+bot = Bot(command_prefix='%', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
@@ -291,8 +290,6 @@ async def clear(ctx, q):
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
 
-
-
 @bot.command()
 async def release(ctx):
     """
@@ -312,10 +309,15 @@ async def release(ctx):
 
 @bot.command()
 async def rps(ctx):
-    embed=discord.Embed(
+    """
+    This function allows you to play Rock-Paper-Scissors with the discord bot.
+    :param ctx:
+    :return: N/A
+    """
+    embed = discord.Embed(
         title="Welcome to the Rock-Paper-Scissors game !!!",
         description="Rock, Paper, or Scissors? Choose wisely ... 🥸",
-        color= discord.Colour.yellow()
+        color=discord.Colour.yellow()
     )
     choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️"]
     choices_reg = ["rock", "paper", "scissors"]
@@ -336,7 +338,7 @@ async def rps(ctx):
         if "rock" in pc_choice:
             await ctx.send(f"Woah!!! we really had to tie 🫥.\n Your choice:")
             await ctx.send(file=discord.File('assets/ro.jpg'))
-            await ctx. send("Bots choice:")
+            await ctx.send("Bots choice:")
             await ctx.send(file=discord.File('assets/ro.jpg'))
         elif "paper" in pc_choice:
             await ctx.send(
@@ -350,7 +352,6 @@ async def rps(ctx):
             await ctx.send(file=discord.File('assets/ro.jpg'))
             await ctx.send("Bot choice:")
             await ctx.send(file=discord.File('assets/sci.jpg'))
-
 
     #   Let's set the conditions for paper
     if user_choice == 'paper':
@@ -390,6 +391,121 @@ async def rps(ctx):
             await ctx.send(file=discord.File('assets/sci.jpg'))
             await ctx.send("Bot choice:")
             await ctx.send(file=discord.File('assets/pap.jpg'))
+
+
+# @bot.command()
+# async def guess(ctx):
+#     embed = discord.Embed(
+#         title="Guessing Game 🥸👀",
+#         description="Try and guess the number I'm thinking.🤔\nYou only get 3 chances to guess the correct number."
+#                     "\nDkn what to put yet!!!",
+#
+#         color=discord.Colour.red()
+#     )
+#     tries = 3
+#     number = random.randrange(50)                                   STILL  UNDER WORK
+#     amount_tries = 0
+#     await ctx.send(embed=embed)
+#
+#     def check(msg):
+#         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower()
+#
+#     user_choice = await bot.wait_for('message', check=check)
+#     while tries == 3:
+#         user_choice = await bot.wait_for('message', check=check)
+#         user_choice = user_choice.content
+#         print("hello")
+#         if user_choice == number:
+#             await ctx.send("Congrats you found the number")
+
+
+@bot.command()
+async def grps(ctx, size, min_size):
+    """
+    :param ctx: automatically passed context argument
+    :param size: defines the maximum size of the group
+    :param min_size: defines the minimum size of the group
+    :return: Nothing
+    """
+    import random
+
+    # Define a function to check for valid integer inputs
+    def is_valid_int(input_str):
+        try:
+            input_int = int(input_str)
+            return input_int > 0
+        except ValueError:
+            return False
+
+    # Check that the size and min_size arguments are valid integers
+    if not is_valid_int(size) or not is_valid_int(min_size):
+        await ctx.send("Please enter valid integer arguments for the minimum and maximum size of the group .")
+        return
+
+    # Convert the size and min_size arguments to integers
+    size = int(size)
+    min_size = int(min_size)
+
+    # Create an embed for the message to react to
+    embed = discord.Embed(
+        title="Group generator",
+        description="React to this message to get assigned to a group. Press 🛑 to stop the program",
+        color=discord.Colour.yellow()
+    )
+
+    # Send the message and add the reactions
+    message = await ctx.send(embed=embed)
+    await message.add_reaction('👍')
+    await message.add_reaction('🛑')
+
+    # Define a function to check for valid reactions from non-bot users
+    def check(reaction, user):
+        return user != bot.user and str(reaction.emoji) in ['👍', '🛑'] and reaction.message.id == message.id
+
+    # Wait for reactions for 1 minute
+    try:
+        while True:
+            reaction, user = await bot.wait_for('reaction_add', timeout=60, check=check)
+
+            # If someone presses the stop button, shuffle members into groups
+            if str(reaction.emoji) == '🛑':
+                random.shuffle(members)
+                num_groups = len(members) // size + int(len(members) % size != 0)
+                groups = [members[i * size:(i + 1) * size] for i in range(num_groups)]
+
+                # Send a message to each member of each group
+                for i, group in enumerate(groups):
+                    group_str = ", ".join(member.mention for member in group)
+                    for member in group:
+                        await member.send(f"{member.mention}. You are in group {i + 1} with: {group_str} ")
+
+                # Send a message to the channel that the groups have been formed
+                await ctx.send("Groups have been formed!")
+                break
+
+            # If someone presses the join button, add them to the members list
+            elif str(reaction.emoji) == '👍':
+                members = []
+                async for user in reaction.users():
+                    if user != bot.user:
+                        members.append(user)
+
+                members = [await bot.fetch_user(member.id) for member in members]
+
+    except asyncio.TimeoutError:
+        await ctx.send("Group forming has been closed...")
+        return
+
+    # Check if there are enough members to form a group
+    if len(members) < min_size:
+        await ctx.send("Not enough people reacted to form a group.")
+        return
+
+    # If there are enough members, but not enough to form a full group, make a group with all of them
+    elif len(members) < size:
+        group_str = ", ".join(member.mention for member in members)
+        for member in members:
+            await member.send(f"{member.mention}, you are in")
 
 
 bot.run(token=_token)
