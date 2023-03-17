@@ -61,7 +61,7 @@ def write_cache(live_cache: dict):
 async def on_ready():
     print(f'Bot is logged in as {bot.user}')
     try:
-        db_con = sqlite3.connect("bot.db")
+        db_con = sqlite3.connect("data/bot.sqlite")
         db_cur = db_con.cursor()
         db_cur.execute("CREATE TABLE IF NOT EXISTS user_info(discordID, name, studentID, email)")
         db_con.commit()
@@ -586,7 +586,7 @@ async def verify(ctx):
     elif str(_reaction.emoji) == "✅":
         # add to database
         try:
-            db_con = sqlite3.connect("bot.db")
+            db_con = sqlite3.connect("data/bot.sqlite")
             db_cur = db_con.cursor()
             db_cur.execute("SELECT * FROM user_info WHERE discordID = ?", (ctx.author.id,))
             if db_cur.fetchone():  # Update
@@ -628,7 +628,7 @@ async def me(ctx):
     """
     await ctx.send(f"Sending data for user {ctx.author.name}...")
     try:
-        db_con = sqlite3.connect("bot.db")
+        db_con = sqlite3.connect("data/bot.sqlite")
         db_cur = db_con.cursor()
         db_cur.execute("SELECT * FROM user_info WHERE discordID=?", (ctx.author.id,))
         data = db_cur.fetchone()
@@ -683,7 +683,7 @@ async def attendance(ctx, url=None):
         try:
             _react, _user = await bot.wait_for('reaction_add', check=attendance_react_check, timeout=120)
             await _react.remove(_user)
-            db_con = sqlite3.connect("bot.db")
+            db_con = sqlite3.connect("data/bot.sqlite")
             db_cur = db_con.cursor()
             db_cur.execute("SELECT * FROM user_info WHERE discordID=?", (_user.id,))
             data = db_cur.fetchone()
@@ -711,6 +711,7 @@ async def attendance(ctx, url=None):
                 await _user.send(f"Automatically generated filled attendance form: {_url}")
         except asyncio.TimeoutError:
             await ctx.send(f'Attendance has ended.')
+            break
     # split into groups of 10
 
 
