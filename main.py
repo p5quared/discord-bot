@@ -11,11 +11,11 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 load_dotenv()
-_token = os.environ['DISCORD_TOKEN']
+_token = os.environ['THE_SHERIFF']
 _intents = discord.Intents.default()
 _intents.message_content = True
 _intents.members = True
-bot = Bot(command_prefix='!', intents=_intents)
+bot = Bot(command_prefix='$', intents=_intents)
 
 with open("help.json", "r") as f:
     help_file = json.load(f)
@@ -83,12 +83,6 @@ async def on_message(message):
     if "bot is bad" in message.content:
         # send threatening DM
         await message.author.send("I WILL SLAUGHTER YOUR FAMILY!!!!!!!!!!!!")
-
-    #  sadly this does not work yet
-    if message.author == "Nelson#8832":
-        print("I've been waiting for you, Nelson!!!!")
-    if message.author == "nathan#7654":
-        print("I've been waiting for you, Nathan!!!!")
 
 
 @bot.command()
