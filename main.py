@@ -609,7 +609,7 @@ async def verify(ctx):
         await ctx.author.send(
             "Thank you for verifying your information. You will be notified when your information has "
             "been verified.")
-        await ctx.author.send("If you need to change your information, please use !verify again.")
+        await ctx.author.send("If you need to change your information, please use $verify again.")
 
 
 @bot.command()
@@ -631,7 +631,7 @@ async def me(ctx):
             print(row)
         db_con.close()
         if data is None:
-            await ctx.author.send("No data found. Please verify your information using !verify.")
+            await ctx.author.send("No data found. Please verify your information using $verify.")
             return
         else:
             await ctx.author.send("Here is your data:")
@@ -639,7 +639,7 @@ async def me(ctx):
             await ctx.author.send(f"Name: {data[2]}")
             await ctx.author.send(f"Student ID: {data[3]}")
     except KeyError:
-        await ctx.author.send("No data found. Please verify your information using !verify.")
+        await ctx.author.send("No data found. Please verify your information using $verify.")
 
 
 @bot.command()
@@ -654,7 +654,7 @@ async def attendance(ctx, url=None):
     """
     emoji = "🤠"
     if url is None:
-        await ctx.send("Invalid usage. Please use !attendance <url>")
+        await ctx.send("Invalid usage. Please use $attendance <url>")
         return
     await ctx.message.delete()
     attendance_embed = discord.Embed(title=f'Attendance for DATE',
@@ -683,7 +683,7 @@ async def attendance(ctx, url=None):
             data = db_cur.fetchone()
             db_con.close()
             if data is None:
-                await _user.send("You have not verified your information. Please use !verify to do so.")
+                await _user.send("You have not verified your information. Please use $verify to do so.")
             else:
                 # (discordID, email, name, studentID)
                 f_name, l_name = data[1].split(" ")
