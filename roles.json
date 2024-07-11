@@ -1,18 +1,18 @@
 {
   "sa": {
     "embed": {
-      "title": "Please select/react to the BMCC status that suits you.",
+      "title": "Please select/react to the BMCC status which best suits you.",
       "description": ":notebook: - Student\n:mortar_board: - Alumni\nNote: Picking a role indicates that you have read, and agreed to our rules, and thus, grants you access to the channels of this server. Happy coding!"
     },
     "reacts": {
       "\ud83d\udcd3": "Member",
       "\ud83c\udf93": "Alumni"
     },
-    "ID": 1039618814171697232
+    "ID": 1045770124268937236
   },
   "gender": {
     "embed": {
-      "title": "Select/react to the gender identity which best suits you",
+      "title": "Select/react to the gender identity which best suits you.",
       "description": "This makes it easier for us to make certain channels accessible to you, like AcmW which is a group for Women & non-binaries.\nWe will work to ensure this club is a safe space for all members.\n:blue_circle: He/Him\n:purple_circle: She/Her\n:green_circle: They/Them"
     },
     "reacts": {
@@ -20,7 +20,17 @@
       "\ud83d\udfe3": "She/Her",
       "\ud83d\udfe2": "They/Them"
     },
-    "ID": 1039618931800940625
+    "ID": 1045771129496809492
+  },
+  "website": {
+    "embed": {
+      "title": "Opt-in to Programming-Club-Website development team!",
+      "description": "Howdy fellers! The time has come to develop a new website for the BMCC programming club. Reacting with \ud83d\udd78 will toggle your access to a private text-channel for discussion, planning, and development of the new BMCC programming club website, and also add a new @role so we may mention the sub-group."
+    },
+    "reacts": {
+      "\ud83d\udd78": "WebsiteTeam"
+    },
+    "ID": 1045771635707359332
   },
   "test1": {
     "embed": {

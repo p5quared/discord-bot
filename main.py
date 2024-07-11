@@ -3,7 +3,7 @@ import os
 import asyncio
 import json
 import random
-
+import sqlite3
 
 import discord
 from discord.ext import commands, tasks
@@ -11,9 +11,11 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 
 load_dotenv()
-_token = os.environ['DISCORD_TOKEN']
+
+_token = os.environ['THE_SHERIFF']
 _intents = discord.Intents.default()
 _intents.message_content = True
+_intents.members = True
 bot = Bot(command_prefix='$', intents=_intents)
 
 with open("help.json", "r") as f:
@@ -73,7 +75,15 @@ async def zoom_link():
 @bot.event
 async def on_ready():
     print(f'Bot is logged in as {bot.user}')
-    zoom_link.start() #IMPORTANT: This will start the loop and iterate zoom_link function every 24 hour when program is running.
+    try:
+        db_con = sqlite3.connect("data/bot.sqlite")
+        db_cur = db_con.cursor()
+        db_cur.execute("CREATE TABLE IF NOT EXISTS user_info(discordID, name, studentID, email)")
+        db_con.commit()
+        db_con.close()
+        print("Database connection successful")
+    except Exception as e:
+        print(f"Error creating database: {e}")
 
 
 @bot.event
@@ -84,17 +94,10 @@ async def on_message(message):
 
     if not message.guild:
         print("DM detected.")
-        await message.channel.send("DM received.")
 
     if "bot is bad" in message.content:
         # send threatening DM
         await message.author.send("I WILL SLAUGHTER YOUR FAMILY!!!!!!!!!!!!")
-
-    #  sadly this does not work yet
-    if message.author == "Nelson#8832":
-        print("I've been waiting for you, Nelson!!!!")
-    if message.author == "nathan#7654":
-        print("I've been waiting for you, Nathan!!!!")
 
 
 @bot.command()
@@ -306,16 +309,14 @@ async def clear(ctx, q):
         await ctx.channel.send(f'{int(q) + 1} messages cleared from {ctx.channel}.')
 
 
-
-
 @bot.command()
 async def release(ctx):
-    '''
+    """
     Display most recent release notes.
 
     :param ctx:
     :return: N/a
-    '''
+    """
     await ctx.channel.purge(limit=1)
     with open("release_notes.md", "r") as f:
         notes = f.read()
@@ -327,10 +328,15 @@ async def release(ctx):
 
 @bot.command()
 async def rps(ctx):
-    embed=discord.Embed(
+    """
+    This function allows you to play Rock-Paper-Scissors with the discord bot.
+    :param ctx:
+    :return: N/A
+    """
+    embed = discord.Embed(
         title="Welcome to the Rock-Paper-Scissors game !!!",
         description="Rock, Paper, or Scissors? Choose wisely ... 🥸",
-        color= discord.Colour.yellow()
+        color=discord.Colour.yellow()
     )
     choices_rps = ["rock🪨", "paper🧻 ", "scissors✂️"]
     choices_reg = ["rock", "paper", "scissors"]
@@ -351,7 +357,7 @@ async def rps(ctx):
         if "rock" in pc_choice:
             await ctx.send(f"Woah!!! we really had to tie 🫥.\n Your choice:")
             await ctx.send(file=discord.File('assets/ro.jpg'))
-            await ctx. send("Bots choice:")
+            await ctx.send("Bots choice:")
             await ctx.send(file=discord.File('assets/ro.jpg'))
         elif "paper" in pc_choice:
             await ctx.send(
@@ -365,7 +371,6 @@ async def rps(ctx):
             await ctx.send(file=discord.File('assets/ro.jpg'))
             await ctx.send("Bot choice:")
             await ctx.send(file=discord.File('assets/sci.jpg'))
-
 
     #   Let's set the conditions for paper
     if user_choice == 'paper':
@@ -405,6 +410,318 @@ async def rps(ctx):
             await ctx.send(file=discord.File('assets/sci.jpg'))
             await ctx.send("Bot choice:")
             await ctx.send(file=discord.File('assets/pap.jpg'))
+
+
+# @bot.command()
+# async def guess(ctx):
+#     embed = discord.Embed(
+#         title="Guessing Game 🥸👀",
+#         description="Try and guess the number I'm thinking.🤔\nYou only get 3 chances to guess the correct number."
+#                     "\nDkn what to put yet!!!",
+#
+#         color=discord.Colour.red()
+#     )
+#     tries = 3
+#     number = random.randrange(50)                                   STILL  UNDER WORK
+#     amount_tries = 0
+#     await ctx.send(embed=embed)
+#
+#     def check(msg):
+#         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower()
+#
+#     user_choice = await bot.wait_for('message', check=check)
+#     while tries == 3:
+#         user_choice = await bot.wait_for('message', check=check)
+#         user_choice = user_choice.content
+#         print("hello")
+#         if user_choice == number:
+#             await ctx.send("Congrats you found the number")
+
+
+@bot.command()
+async def grps(ctx, size, min_size):
+    """
+    :param ctx: automatically passed context argument
+    :param size: defines the maximum size of the group
+    :param min_size: defines the minimum size of the group
+    :return: Nothing
+    """
+    import random
+
+    # Define a function to check for valid integer inputs
+    def is_valid_int(input_str):
+        try:
+            input_int = int(input_str)
+            return input_int > 0
+        except ValueError:
+            return False
+
+    # Check that the size and min_size arguments are valid integers
+    if not is_valid_int(size) or not is_valid_int(min_size):
+        await ctx.send("Please enter valid integer arguments for the minimum and maximum size of the group .")
+        return
+
+    # Convert the size and min_size arguments to integers
+    size = int(size)
+    min_size = int(min_size)
+
+    # Create an embed for the message to react to
+    embed = discord.Embed(
+        title="Group generator",
+        description="React to this message to get assigned to a group. Press 🛑 to stop the program",
+        color=discord.Colour.yellow()
+    )
+
+    # Send the message and add the reactions
+    message = await ctx.send(embed=embed)
+    await message.add_reaction('👍')
+    await message.add_reaction('🛑')
+
+    # Define a function to check for valid reactions from non-bot users
+    def check(reaction, user):
+        return user != bot.user and str(reaction.emoji) in ['👍', '🛑'] and reaction.message.id == message.id
+
+    # Wait for reactions for 1 minute
+    try:
+        while True:
+            reaction, user = await bot.wait_for('reaction_add', timeout=60, check=check)
+
+            # If someone presses the stop button, shuffle members into groups
+            if str(reaction.emoji) == '🛑':
+                random.shuffle(members)
+                num_groups = len(members) // size + int(len(members) % size != 0)
+                groups = [members[i * size:(i + 1) * size] for i in range(num_groups)]
+
+                # Send a message to each member of each group
+                for i, group in enumerate(groups):
+                    group_str = ", ".join(member.mention for member in group)
+                    for member in group:
+                        await member.send(f"{member.mention}. You are in group {i + 1} with: {group_str} ")
+
+                # Send a message to the channel that the groups have been formed
+                await ctx.send("Groups have been formed!")
+                break
+
+            # If someone presses the join button, add them to the members list
+            elif str(reaction.emoji) == '👍':
+                members = []
+                async for user in reaction.users():
+                    if user != bot.user:
+                        members.append(user)
+
+                members = [await bot.fetch_user(member.id) for member in members]
+
+    except asyncio.TimeoutError:
+        await ctx.send("Group forming has been closed...")
+        return
+
+    # Check if there are enough members to form a group
+    if len(members) < min_size:
+        await ctx.send("Not enough people reacted to form a group.")
+        return
+
+    # If there are enough members, but not enough to form a full group, make a group with all of them
+    elif len(members) < size:
+        group_str = ", ".join(member.mention for member in members)
+        for member in members:
+            await member.send(f"{member.mention}, you are in")
+
+
+# will eventually need to replace with database
+temp_user_data = {}
+
+
+@bot.command()
+async def verify(ctx):
+    """
+    Enter the verification process.
+    Gathers and stores students' email, name, and student ID.
+
+    :param ctx:
+    :return:
+    """
+    await ctx.author.send("Welcome to the verification process!")
+    await ctx.author.send("Please enter your email address.")
+
+    def _check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
+
+    try:
+        email = await bot.wait_for('message', check=_check, timeout=30)
+    except asyncio.TimeoutError:
+        await ctx.author.send("You took too long to respond. Please try again.")
+        return
+
+    await ctx.author.send("Please enter your full name (first and last).\nSeperated by a space. (ex. John Doe)")
+    try:
+        name = await bot.wait_for('message', check=_check, timeout=30)
+    except asyncio.TimeoutError:
+        await ctx.author.send("You took too long to respond. Please try again.")
+        return
+
+    await ctx.author.send("Please enter your student ID.")
+    try:
+        student_id = await bot.wait_for('message', check=_check, timeout=30)
+    except asyncio.TimeoutError:
+        await ctx.author.send("You took too long to respond. Please try again.")
+        return
+    temp_user_data[ctx.author.id] = {
+        "email": email.content,
+        "name": name.content,
+        "student_id": student_id.content
+    }
+    await ctx.author.send("Here is the information you entered:")
+    await ctx.author.send(f"Email: {temp_user_data[ctx.author.id]['email']}")
+    await ctx.author.send(f"Name: {temp_user_data[ctx.author.id]['name']}")
+    await ctx.author.send(f"Student ID: {temp_user_data[ctx.author.id]['student_id']}")
+    confirmation = await ctx.author.send(
+        "Is this information correct? Your attendance will depend on it (especially ID).")
+    await confirmation.add_reaction("✅")
+    await confirmation.add_reaction("❌")
+
+    def confirm_check(reaction, user):
+        print("reaction noticed")
+        return user == ctx.message.author and str(reaction.emoji) in ["✅", "❌"]
+
+    try:
+        _reaction, _user = await bot.wait_for('reaction_add', check=confirm_check, timeout=30)
+        print(_reaction, _user)
+    except asyncio.TimeoutError:
+        await ctx.author.send("You took too long to respond. Please restart verification process.")
+        return
+    if str(_reaction.emoji) == "❌":
+        await ctx.author.send("Please restart the verification process.")
+        return
+    elif str(_reaction.emoji) == "✅":
+        # add to database
+        try:
+            db_con = sqlite3.connect("data/bot.sqlite")
+            db_cur = db_con.cursor()
+            db_cur.execute("SELECT * FROM user_info WHERE discordID = ?", (ctx.author.id,))
+            if db_cur.fetchone():  # Update
+                db_cur.execute("UPDATE user_info SET email = ?, name = ?, studentID = ? WHERE discordID = ?", (
+                    temp_user_data[ctx.author.id]['email'],
+                    temp_user_data[ctx.author.id]['name'],
+                    temp_user_data[ctx.author.id]['student_id'],
+                    ctx.author.id
+                ))
+                db_con.commit()
+                db_con.close()
+            else:  # New entry
+                db_cur.execute("INSERT INTO user_info VALUES (?, ?, ?, ?)", (
+                    ctx.author.id,
+                    temp_user_data[ctx.author.id]['email'],
+                    temp_user_data[ctx.author.id]['name'],
+                    temp_user_data[ctx.author.id]['student_id']
+                ))
+                db_con.commit()
+                db_con.close()
+        except Exception as e:
+            print(e)
+            await ctx.author.send("There was an error saving your information to the database. Please try again. If "
+                                  "the problem persists, please contact a moderator.")
+            return
+        await ctx.author.send(
+            "Thank you for verifying your information. You will be notified when your information has "
+            "been verified.")
+        await ctx.author.send("If you need to change your information, please use $verify again.")
+
+
+@bot.command()
+async def me(ctx):
+    """
+    Get the user's data from the database.
+
+    :param ctx:
+    :return:
+    """
+    await ctx.send(f"Sending data for user {ctx.author.name}...")
+    try:
+        db_con = sqlite3.connect("data/bot.sqlite")
+        db_cur = db_con.cursor()
+        db_cur.execute("SELECT * FROM user_info WHERE discordID=?", (ctx.author.id,))
+        data = db_cur.fetchone()
+        all_data = db_cur.fetchall()
+        for row in all_data:
+            print(row)
+        db_con.close()
+        if data is None:
+            await ctx.author.send("No data found. Please verify your information using $verify.")
+            return
+        else:
+            await ctx.author.send("Here is your data:")
+            await ctx.author.send(f"Email: {data[1]}")
+            await ctx.author.send(f"Name: {data[2]}")
+            await ctx.author.send(f"Student ID: {data[3]}")
+    except KeyError:
+        await ctx.author.send("No data found. Please verify your information using $verify.")
+
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def attendance(ctx, url=None):
+    """
+    Uses the user's data to submit attendance via Google form.
+
+    :param ctx: automatically passed by discord.py
+    :param url: the url of the Google form
+    :return:
+    """
+    emoji = "🤠"
+    if url is None:
+        await ctx.send("Invalid usage. Please use $attendance <url>")
+        return
+    await ctx.message.delete()
+    attendance_embed = discord.Embed(title=f'Attendance for DATE',
+                                     description=f'We must take attendance.')
+    attendance_embed.add_field(name="How To",
+                               value="If your student info is properly linked to your discord account, "
+                                     f"you can simply react to this message with {emoji}, and a filled "
+                                     "attendance form will be generated for you.\nIf your discord account"
+                                     " is unlinked, you must fill out the google form linked below.",
+                               inline=True)
+    attendance_embed.add_field(name="Google Form Link", value=url, inline=False)
+    attendance_embed.set_footer(text="Brought to you by 'The f'in Sheriff'")
+    attendance_msg = await ctx.send(embed=attendance_embed)
+    await attendance_msg.add_reaction(emoji)
+
+    def attendance_react_check(reaction, user):
+        return user != bot.user and str(reaction.emoji) == emoji
+
+    while True:
+        try:
+            _react, _user = await bot.wait_for('reaction_add', check=attendance_react_check, timeout=120)
+            await _react.remove(_user)
+            db_con = sqlite3.connect("data/bot.sqlite")
+            db_cur = db_con.cursor()
+            db_cur.execute("SELECT * FROM user_info WHERE discordID=?", (_user.id,))
+            data = db_cur.fetchone()
+            db_con.close()
+            if data is None:
+                await _user.send("You have not verified your information. Please use $verify to do so.")
+            else:
+                # (discordID, email, name, studentID)
+                f_name, l_name = data[1].split(" ")
+                f_name_id = "entry.1253937586"
+                l_name_id = "entry.690931678"
+                student_id_id = "entry.1427818186"
+                data = {
+                    f_name_id: f_name,
+                    l_name_id: l_name,
+                    student_id_id: data[2],
+                    "emailAddress": data[3]
+                }
+                params = "?"
+                for key, value in data.items():
+                    params += f"{key}={value}&"
+                params = params[:-1]
+                _url = url + params
+                print(_url)
+                await _user.send(f"Automatically generated filled attendance form: {_url}")
+        except asyncio.TimeoutError:
+            await ctx.send(f'Attendance has ended.')
+            break
+    # split into groups of 10
 
 
 bot.run(token=_token)
